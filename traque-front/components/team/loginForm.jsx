@@ -1,5 +1,5 @@
-import Button from "./utill/button";
-import TextInput from "./utill/textInput";
+import Button from "../util/button";
+import TextInput from "../util/textInput";
 
 export default function LoginForm() {
     return (
