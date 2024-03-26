@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 const { io } = require("socket.io-client");
 
@@ -12,8 +12,9 @@ export const adminSocket = io(ADMIN_SOCKET_URL);
 export const SocketContext = createContext();
 
 export default function SocketProvider({ children }) {
+    const value = useMemo(() => ({ teamSocket, adminSocket }), [teamSocket, adminSocket]);
     return (
-        <SocketContext.Provider value={{teamSocket, adminSocket}}>{children}</SocketContext.Provider>
+        <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
     );
 }
 

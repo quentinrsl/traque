@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { useSocket } from "./socketContext";
 import { useSocketListener } from "@/hook/useSocketListener";
 
@@ -15,9 +15,11 @@ const TeamConnexionProvider = ({ children }) => {
     }
     
     useSocketListener(teamSocket, "login_response", setLoggedIn);
+
+    const value = useMemo(() => ({ teamId, login, loggedIn }), [teamId, login, loggedIn]);
     
     return (
-        <teamConnexionContext.Provider value={{ teamId, login, loggedIn }}>
+        <teamConnexionContext.Provider value={value}>
         {children}
         </teamConnexionContext.Provider>
     );

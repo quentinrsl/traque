@@ -1,7 +1,7 @@
 "use client";
 import { useLocation } from "@/hook/useLocation";
 import { useSocketListener } from "@/hook/useSocketListener";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useSocket } from "./socketContext";
 import { useTeamConnexion } from "./teamConnexionContext";
 
@@ -22,8 +22,9 @@ function TeamProvider({children}) {
         }
     }, [loggedIn, currentPosition]);
     
+    const value = useMemo(() => ({enemyPosition, currentPosition}), [enemyPosition, currentPosition]);
     return (
-        <teamContext.Provider value={{enemyPosition, currentPosition}}>
+        <teamContext.Provider value={value}>
             {children}
         </teamContext.Provider>
     );

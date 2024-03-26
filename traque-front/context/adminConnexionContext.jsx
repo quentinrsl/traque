@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { useSocket } from "./socketContext";
 import { useSocketListener } from "@/hook/useSocketListener";
 
@@ -14,8 +14,10 @@ const AdminConnexionProvider = ({ children }) => {
 
     useSocketListener(adminSocket, "login_response", setLoggedIn);
 
+    const value = useMemo(() => ({ login, loggedIn }), [loggedIn]);
+
     return (
-        <adminContext.Provider value={{ login, loggedIn }}>
+        <adminContext.Provider value={value}>
             {children}
         </adminContext.Provider>
     );
