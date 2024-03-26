@@ -22,13 +22,28 @@ function MapPan(props) {
 }
 
 export default function LiveMap({enemyPosition, currentPosition, ...props}) {
+    const [positionSet, setPositionSet] = useState(false);
+    useEffect(() => {
+        if(!positionSet && JSON.stringify(currentPosition) != "[0,0]") {
+            setPositionSet(true);
+        }
+    }, [currentPosition]);
+    const [enemyPositionSet, setEnemyPositionSet] = useState(false);
+    useEffect(() => {
+        if(!enemyPositionSet && JSON.stringify(enemyPosition) != "[0,0]") {
+            setEnemyPositionSet(true);
+        }
+    }, [enemyPosition]);
+
+
+
     return (
         <MapContainer  {...props} center={[0,0]} zoom={0} scrollWheelZoom={true}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={currentPosition} icon={new L.Icon({
+            {positionSet && <Marker position={currentPosition} icon={new L.Icon({
                 iconUrl: '/icons/location.png',
                 iconSize: [41, 41],
                 iconAnchor: [12, 41],
@@ -38,8 +53,8 @@ export default function LiveMap({enemyPosition, currentPosition, ...props}) {
                 <Popup>
                     Votre position
                 </Popup>
-            </Marker>
-            <Marker  position={enemyPosition} icon={new L.Icon({
+            </Marker>}
+            {enemyPositionSet && <Marker  position={enemyPosition} icon={new L.Icon({
                 iconUrl: '/icons/target.png',
                 iconSize: [41, 41],
                 iconAnchor: [12, 41],
@@ -49,7 +64,7 @@ export default function LiveMap({enemyPosition, currentPosition, ...props}) {
                 <Popup>
                     Position de l'ennemi
                 </Popup>
-            </Marker>
+            </Marker>}
             <MapPan center={currentPosition}/>
         </MapContainer>
     )
