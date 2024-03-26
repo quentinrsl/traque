@@ -163,12 +163,13 @@ io.of("player").on("connection", (socket) => {
     }
   });
 
-  socket.on("login", (teamId) => {
-    if(game.getTeam(teamId) === undefined) {
+  socket.on("login", (loginTeamId) => {
+    if(game.getTeam(loginTeamId) === undefined) {
       socket.emit("login_response", false);
       return;
     }
-    game.getTeam(teamId).sockets.push(socket.id);
+    teamId = loginTeamId;
+    game.getTeam(loginTeamId).sockets.push(socket.id);
     socket.emit("login_response", true);
   });
 
@@ -178,8 +179,14 @@ io.of("player").on("connection", (socket) => {
   
   socket.on("send_position", () => {
     game.sendLocation(teamId);
-    game.getTeam(teamId).sockets.forEach(s => {
-      io.of("player").to(s).emit("enemy_position", game.getTeam(teamId).enemyLocation);
+    let team = game.getTeam(teamId);
+    if(team === undefined) {
+      socket.emit("error", "Team not found");
+      return;
+    }
+    game.updateTeamChasing();
+    team.sockets.forEach(s => {
+      io.of("player").to(s).emit("enemy_position", team.enemyLocation);
     });
   });
 });

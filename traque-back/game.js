@@ -69,9 +69,6 @@ export default class Game {
     }
 
     updateLocation(teamId, location) {
-        if(!this.started) {
-            return false;
-        }
         let team = this.getTeam(teamId);
         if(team == undefined) {
             return false;
@@ -81,9 +78,6 @@ export default class Game {
     }
 
     sendLocation(teamId) {
-        if(!this.started) {
-            return false;
-        }
         let team = this.getTeam(teamId);
         if(team == undefined) {
             return false;

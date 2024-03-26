@@ -10,7 +10,7 @@ export default function useGame() {
     const {currentPosition, enemyPosition} = useTeamContext();
 
     function sendCurrentPosition() {
-        teamSocket.emit("send_position", currentPosition);
+        teamSocket.emit("send_position");
     }
 
     return { sendCurrentPosition, login, enemyPosition, currentPosition, loggedIn, teamId };

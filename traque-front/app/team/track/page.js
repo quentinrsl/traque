@@ -20,9 +20,13 @@ export default function Track() {
 
 
     return (
-        <div className='h-full flex flex-col justify-between'>
-            <LiveMap currentPosition={currentPosition} enemyPosition={enemyPosition} className="h-4/5" />
-            <Button onClick={sendCurrentPosition}>Update position</Button>
+        <div className='h-full flex flex-col justify-between justify-items-stretch'>
+            <div className='h-5/6'>
+                <LiveMap currentPosition={currentPosition} enemyPosition={enemyPosition}/>
+            </div>
+            <div className="h-1/6">
+                <Button onClick={sendCurrentPosition}>Update position</Button>
+            </div>
             <div className='shadow-lg m-5 p-2 flex flex-col text-center mx-auto w-4/5 rounded'>
                 <p className='text-xl text-black'>30min</p>
                 <p className='text-gray-700'> before penalty</p>
