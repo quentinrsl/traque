@@ -1,8 +1,9 @@
 "use client";
 import Button from '@/components/util/button';
+import useGame from '@/hook/useGame';
 import dynamic from 'next/dynamic';
+import { redirect } from 'next/navigation';
 import React, { useEffect } from 'react'
-import useGame from '../../hook/useGame';
 
 //Load the map without SSR
 const LiveMap = dynamic(() => import('@/components/team/map'), {
@@ -10,7 +11,12 @@ const LiveMap = dynamic(() => import('@/components/team/map'), {
 });
 
 export default function Track() {
-    const { currentPosition, enemyPosition, updateCurrentPosition, sendCurrentPosition } = useGame();
+    const { currentPosition, enemyPosition, loggedIn, sendCurrentPosition } = useGame();
+    useEffect(() => {
+        if (!loggedIn) {
+            redirect("/team");
+        }
+    }, [loggedIn]);
 
 
     return (

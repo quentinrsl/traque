@@ -1,5 +1,3 @@
-import { Socket } from "socket.io";
-
 export default class Game {
     constructor() {
         this.teams = [];
@@ -31,7 +29,8 @@ export default class Game {
             chased: null,
             currentLocation: [0, 0],
             lastSentLocation: [0, 0],
-            enemyLocation: [0, 0]
+            enemyLocation: [0, 0],
+            sockets: []
         });
         this.updateTeamChasing();
         return true;

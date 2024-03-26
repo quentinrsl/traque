@@ -7,12 +7,14 @@ import "leaflet/dist/leaflet.css";
 
 const DEFAULT_ZOOM = 17;
 
+
+// Pan to the center of the map when the position of the user is updated for the first time
 function MapPan(props) {
   const map = useMap();
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if(!initialized && JSON.stringify(props.center) != "[0,0]") {
+    if(!initialized && props.center) {
         map.flyTo(props.center, DEFAULT_ZOOM);
         setInitialized(true)
     }
@@ -22,20 +24,6 @@ function MapPan(props) {
 }
 
 export default function LiveMap({enemyPosition, currentPosition, ...props}) {
-    const [positionSet, setPositionSet] = useState(false);
-    useEffect(() => {
-        if(!positionSet && JSON.stringify(currentPosition) != "[0,0]") {
-            setPositionSet(true);
-        }
-    }, [currentPosition]);
-    const [enemyPositionSet, setEnemyPositionSet] = useState(false);
-    useEffect(() => {
-        if(!enemyPositionSet && JSON.stringify(enemyPosition) != "[0,0]") {
-            setEnemyPositionSet(true);
-        }
-    }, [enemyPosition]);
-
-
 
     return (
         <MapContainer  {...props} center={[0,0]} zoom={0} scrollWheelZoom={true}>
@@ -43,7 +31,7 @@ export default function LiveMap({enemyPosition, currentPosition, ...props}) {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {positionSet && <Marker position={currentPosition} icon={new L.Icon({
+            {currentPosition && <Marker position={currentPosition} icon={new L.Icon({
                 iconUrl: '/icons/location.png',
                 iconSize: [41, 41],
                 iconAnchor: [12, 41],
@@ -54,7 +42,7 @@ export default function LiveMap({enemyPosition, currentPosition, ...props}) {
                     Votre position
                 </Popup>
             </Marker>}
-            {enemyPositionSet && <Marker  position={enemyPosition} icon={new L.Icon({
+            {enemyPosition && <Marker  position={enemyPosition} icon={new L.Icon({
                 iconUrl: '/icons/target.png',
                 iconSize: [41, 41],
                 iconAnchor: [12, 41],

@@ -158,7 +158,9 @@ io.of("player").on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
-    game.getTeam(teamId).sockets = game.getTeam(teamId).sockets.filter(s => s !== socket.id);
+    if(teamId !== null && game.getTeam(teamId) !== undefined){
+      game.getTeam(teamId).sockets = game.getTeam(teamId).sockets.filter(s => s !== socket.id);
+    }
   });
 
   socket.on("login", (teamId) => {
@@ -175,7 +177,6 @@ io.of("player").on("connection", (socket) => {
   });
   
   socket.on("send_position", () => {
-    console.log("send_position", position);
     game.sendLocation(teamId);
     game.getTeam(teamId).sockets.forEach(s => {
       io.of("player").to(s).emit("enemy_position", game.getTeam(teamId).enemyLocation);
