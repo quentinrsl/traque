@@ -26,7 +26,7 @@ function MapPan(props) {
 export default function LiveMap({enemyPosition, currentPosition, ...props}) {
 
     return (
-        <MapContainer  {...props} className='min-h-full' center={[0,0]} zoom={0} scrollWheelZoom={true}>
+        <MapContainer  {...props} className='min-h-full z-0' center={[0,0]} zoom={0} scrollWheelZoom={true}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

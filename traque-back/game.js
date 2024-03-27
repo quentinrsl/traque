@@ -15,9 +15,13 @@ export default class Game {
     getNewTeamId() {
         let id = null;
         while(id === null || this.teams.find(t => t.id === id)) {
-            id = Math.floor(Math.random() * 1000000);
+            id = Math.floor(Math.random() * 1_000_000);
         }
         return id;
+    }
+
+    createCaptureCode() {
+        return Math.floor(Math.random() * 10000)
     }
 
     addTeam(teamName) {
@@ -27,9 +31,10 @@ export default class Game {
             name: teamName,
             chasing: null,
             chased: null,
-            currentLocation: [0, 0],
-            lastSentLocation: [0, 0],
-            enemyLocation: [0, 0],
+            currentLocation: null,
+            lastSentLocation: null,
+            enemyLocation: null,
+            captureCode: this.createCaptureCode(),
             sockets: []
         });
         this.updateTeamChasing();

@@ -51,10 +51,11 @@ export default function TeamEdit({selectedTeamId, setSelectedTeamId}) {
         <div className='w-1/2 flex flex-col space-y-2 mx-2'>
             <h2 className='text-2xl text-center'>Team details</h2>
             <div>
-                <p>Secret : {team.id}</p>
+                <p>Secret : {String(team.id).padStart(6,'0')}</p>
                 <p>Name : {team.name}</p>
                 <p>Chasing : {getTeamName(team.chasing)}</p>
                 <p>Chased by : {getTeamName(team.chased)}</p>
+                <p>Capture code : {String(team.captureCode).padStart(4,'0')}</p>
             </div>
         </div>
     </div>

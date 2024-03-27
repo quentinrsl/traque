@@ -1,16 +1,22 @@
 "use client";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useSocket } from "./socketContext";
 import { useSocketListener } from "@/hook/useSocketListener";
+import { useLocalStorage } from "@/hook/useLocalStorage";
 
 const teamConnexionContext = createContext();
 const TeamConnexionProvider = ({ children }) => {
     const [loggedIn, setLoggedIn] = useState(false);
-    const [teamId, setTeamId] = useState(null);
+    const [teamId, setTeamId] = useLocalStorage("team_id", null);
     const { teamSocket } = useSocket();
-    
+
+    useEffect(() => {
+        if (teamId && !loggedIn) {
+            teamSocket.emit("login", teamId);
+        }
+    }, [teamId]);
+
     function login(id) {
-        teamSocket.emit("login", id);
         setTeamId(id);
     }
     
