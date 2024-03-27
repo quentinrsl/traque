@@ -33,7 +33,7 @@ export default function ActionDrawer() {
                 </div>
                 <div className="mt-1 mb-auto">
                     <div className="h-20 flex flex-row">
-                        <TextInput inputmode="numeric" placeholder="Enemy code" onClick={(i) => { console.log(i) }} />
+                        <TextInput inputMode="numeric" placeholder="Enemy code" onClick={(i) => { console.log(i) }} />
                         <GreenButton onClick={sendCurrentPosition}>Capture target</GreenButton>
                     </div>
                 </div>

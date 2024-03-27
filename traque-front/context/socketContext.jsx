@@ -3,9 +3,11 @@ import { createContext, useContext, useMemo } from "react";
 
 const { io } = require("socket.io-client");
 
-const SOCKET_URL = 'http://' + process.env.NEXT_PUBLIC_SOCKET_HOST + ':' + process.env.NEXT_PUBLIC_SOCKET_PORT;
+const SOCKET_URL = 'wss://' + process.env.NEXT_PUBLIC_SOCKET_HOST + ':' + process.env.NEXT_PUBLIC_SOCKET_PORT;
 const USER_SOCKET_URL = SOCKET_URL + "/player";
 const ADMIN_SOCKET_URL = SOCKET_URL + "/admin";
+console.log(USER_SOCKET_URL);
+console.log(ADMIN_SOCKET_URL);
 
 export const teamSocket = io(USER_SOCKET_URL);
 export const adminSocket = io(ADMIN_SOCKET_URL);

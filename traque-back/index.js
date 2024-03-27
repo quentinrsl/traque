@@ -1,19 +1,26 @@
-import { createServer } from "http";
+import { createServer } from "https";
 import { Server } from "socket.io";
 import Game from "./game.js";
 import { config } from "dotenv";
+import { readFileSync } from "fs";
 //extract admin password from .env file
 config();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const HOST = process.env.HOST;
 const PORT = process.env.PORT;
 
-const httpServer = createServer();
-//Password that socket clients will have to send to be able to send admin commands
+const httpsServer = createServer({
+  key: readFileSync(process.env.SSL_KEY, 'utf-8'),
+  cert: readFileSync(process.env.SSL_CERT, 'utf-8')
+});
+
+httpsServer.listen(PORT, HOST, () => {
+  console.log(`Server running`);
+});
 
 
 //set cors to allow all origins
-const io = new Server(httpServer, {
+const io = new Server(httpsServer, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
@@ -194,8 +201,4 @@ io.of("player").on("connection", (socket) => {
       io.of("player").to(s).emit("enemy_position", team.enemyLocation);
     });
   });
-});
-
-httpServer.listen(PORT, HOST, () => {
-  console.log(`Server running`);
 });
