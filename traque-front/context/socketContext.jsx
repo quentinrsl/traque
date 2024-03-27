@@ -3,7 +3,7 @@ import { createContext, useContext, useMemo } from "react";
 
 const { io } = require("socket.io-client");
 
-const SOCKET_URL = "http://localhost:3000";
+const SOCKET_URL = 'http://' + process.env.NEXT_PUBLIC_SOCKET_HOST + ':' + process.env.NEXT_PUBLIC_SOCKET_PORT;
 const USER_SOCKET_URL = SOCKET_URL + "/player";
 const ADMIN_SOCKET_URL = SOCKET_URL + "/admin";
 

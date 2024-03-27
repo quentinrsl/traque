@@ -1,11 +1,16 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
 import Game from "./game.js";
+import { config } from "dotenv";
+//extract admin password from .env file
+config();
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const HOST = process.env.HOST;
+const PORT = process.env.PORT;
 
 const httpServer = createServer();
 //Password that socket clients will have to send to be able to send admin commands
-//TODO: put this in an environment variable
-const ADMIN_PASSWORD = "admin";
+
 
 //set cors to allow all origins
 const io = new Server(httpServer, {
@@ -191,4 +196,6 @@ io.of("player").on("connection", (socket) => {
   });
 });
 
-httpServer.listen(3000);
+httpServer.listen(PORT, HOST, () => {
+  console.log(`Server running`);
+});
