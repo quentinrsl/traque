@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import TextInput from '../util/textInput'
-import Button from '../util/button';
+import BlueButton from '../util/button';
 import useAdmin from '@/hook/useAdmin';
 import dynamic from 'next/dynamic';
 
@@ -42,10 +42,10 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                             <TextInput name="teamName" label='Team name' value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} />
                         </div>
                         <div className='w-2/5'>
-                            <Button type="submit">Rename</Button>
+                            <BlueButton type="submit">Rename</BlueButton>
                         </div>
                     </form>
-                    <Button onClick={handleRemove}>Remove</Button>
+                    <BlueButton onClick={handleRemove}>Remove</BlueButton>
                 </div>
                 <div className='w-1/2 flex flex-col space-y-2 mx-2'>
                     <h2 className='text-2xl text-center'>Team details</h2>

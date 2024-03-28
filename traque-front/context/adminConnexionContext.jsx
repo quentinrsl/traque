@@ -1,8 +1,7 @@
 "use client";
-import { createContext, useContext, useEffect, useMemo, } from "react";
+import { createContext, useContext,  useMemo, } from "react";
 import { useSocket } from "./socketContext";
 import { useSocketAuth } from "@/hook/useSocketAuth";
-import { redirect, usePathname } from "next/navigation";
 import { usePasswordProtect } from "@/hook/usePasswordProtect";
 
 const adminConnexionContext = createContext();

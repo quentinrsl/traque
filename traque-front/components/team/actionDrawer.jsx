@@ -1,6 +1,6 @@
 import useGame from "@/hook/useGame";
 import { useState } from "react"
-import Button, { GreenButton, RedButton } from "../util/button";
+import BlueButton, { GreenButton, RedButton } from "../util/button";
 import TextInput from "../util/textInput";
 
 export default function ActionDrawer() {
@@ -23,10 +23,10 @@ export default function ActionDrawer() {
                     </div>
                 </div>
                 <div className="h-20 my-1">
-                    <Button onClick={sendCurrentPosition} className="h-10">Update position</Button>
+                    <BlueButton onClick={sendCurrentPosition} className="h-10">Update position</BlueButton>
                 </div>
                 <div className="h-20 my-1">
-                    <Button onClick={sendCurrentPosition} className="h-10">Message log</Button>
+                    <BlueButton onClick={sendCurrentPosition} className="h-10">Message log</BlueButton>
                 </div>
                 <div className="h-20 my-1">
                     <GreenButton onClick={sendCurrentPosition}>See target info</GreenButton>
