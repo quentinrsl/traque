@@ -6,12 +6,13 @@ import { useTeamContext } from "@/context/teamContext";
 
 export default function useGame() {
     const {teamSocket} = useSocket();
-    const {loggedIn, login, teamId} = useTeamConnexion();
+    const {teamId} = useTeamConnexion();
     const {currentPosition, enemyPosition} = useTeamContext();
 
     function sendCurrentPosition() {
         teamSocket.emit("send_position");
     }
 
-    return { sendCurrentPosition, login, enemyPosition, currentPosition, loggedIn, teamId };
+
+    return { sendCurrentPosition, enemyPosition, currentPosition, teamId };
 }
