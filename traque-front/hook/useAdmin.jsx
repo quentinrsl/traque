@@ -30,8 +30,8 @@ export default function useAdmin(){
         adminSocket.emit("remove_team", teamId);
     }
 
-    function setTeamName(teamId, newName) {
-        adminSocket.emit("rename_team", teamId, newName);
+    function updateTeam(teamId, team) {
+        adminSocket.emit("update_team", teamId, team);
     }
 
     function startGame() {
@@ -42,6 +42,6 @@ export default function useAdmin(){
         adminSocket.emit("stop_game");
     }
 
-    return {teams, started, pollTeams, getTeam, getTeamName, reorderTeams, addTeam, removeTeam, startGame, stopGame, setTeamName };
+    return {teams, started, pollTeams, getTeam, getTeamName, reorderTeams, addTeam, removeTeam, startGame, stopGame, updateTeam };
 
 }

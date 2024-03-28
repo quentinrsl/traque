@@ -41,6 +41,13 @@ export function CircularAreaPicker({area, setArea, ...props}) {
     const [center, setCenter] = useState(area?.center || null);
     const [radius, setRadius] = useState(area?.radius || null);
 
+    useEffect(() => {
+        console.log(area)
+        setDrawing(false);
+        setCenter(area?.center || null);
+        setRadius(area?.radius || null);
+    }, [area])
+
     function handleClick(e) {
         if(!drawing) {
             setCenter(e.latlng);

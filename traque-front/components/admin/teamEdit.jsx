@@ -10,28 +10,20 @@ const CircularAreaPicker = dynamic(() => import('./mapPicker').then((mod) => mod
 
 export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
     const [newTeamName, setNewTeamName] = React.useState('');
-    const { setTeamName, getTeamName, removeTeam, getTeam } = useAdmin();
+    const { updateTeam, getTeamName, removeTeam, getTeam, teams } = useAdmin();
     const [team, setTeam] = useState({})
 
     useEffect(() => {
         let team = getTeam(selectedTeamId);
         if (team != undefined) {
             setNewTeamName(team.name);
-        }
-    }, [selectedTeamId])
-
-
-    useEffect(() => {
-        let team = getTeam(selectedTeamId);
-        if (team != undefined) {
             setTeam(team);
         }
-    }, [selectedTeamId])
+    }, [selectedTeamId, teams])
 
-
-    function handleSubmit(e) {
+    function handleRename(e) {
         e.preventDefault();
-        setTeamName(team.id, newTeamName);
+        updateTeam(team.id, {name:newTeamName});
     }
 
     function handleRemove() {
@@ -45,7 +37,7 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
             <div className='flex flex-row'>
                 <div className='w-1/2 flex flex-col space-y-3 mx-2'>
                     <h2 className='text-2xl text-center'>Actions</h2>
-                    <form className='flex flex-row' onSubmit={handleSubmit}>
+                    <form className='flex flex-row' onSubmit={handleRename}>
                         <div className='w-4/5'>
                             <TextInput name="teamName" label='Team name' value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} />
                         </div>
@@ -53,7 +45,7 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                             <Button type="submit">Rename</Button>
                         </div>
                     </form>
-                    <Button onClick={handleRemove}>Eliminate</Button>
+                    <Button onClick={handleRemove}>Remove</Button>
                 </div>
                 <div className='w-1/2 flex flex-col space-y-2 mx-2'>
                     <h2 className='text-2xl text-center'>Team details</h2>
@@ -68,7 +60,7 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
             </div>
             <div className='m-5 h-full flex flex-col'>
                 <h2 className='text-2xl text-center'>Starting area</h2>
-                <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => setTeam({ ...team, startingArea })} />
+                <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => updateTeam(team.id, {startingArea})} />
             </div>
         </div>
     )
