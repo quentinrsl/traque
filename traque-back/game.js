@@ -1,15 +1,22 @@
+const GameState = {
+    SETUP: "setup",
+    PLACEMENT: "placement",
+    PLAYING: "playing",
+    FINISHED: "finished"
+}
+
 export default class Game {
     constructor() {
         this.teams = [];
-        this.started = false;
+        this.state = GameState.SETUP;
     }
 
-    start() {
-        this.started = true;
-    }
-
-    stop() {
-        this.started = false;
+    setState(newState) {
+        if(Object.values(GameState).indexOf(newState) == -1) {
+            return false;
+        }
+        this.state = newState;
+        return true;
     }
 
     getNewTeamId() {
@@ -35,7 +42,8 @@ export default class Game {
             lastSentLocation: null,
             enemyLocation: null,
             captureCode: this.createCaptureCode(),
-            sockets: []
+            sockets: [],
+            startingArea: null
         });
         this.updateTeamChasing();
         return true;
@@ -64,14 +72,25 @@ export default class Game {
         return this.teams.find(t => t.id === teamId);
     }
 
-    renameTeam(teamId, newName) {
-        let team = this.getTeam(teamId);
-        if(team == undefined) {
-            return false;
-        }
-        team.name = newName;
+    updateTeam(teamId, newTeam) {
+        this.teams = this.teams.map((t) => {
+            if(t.id == teamId) {
+                return {...t, ...newTeam}
+            }else {
+                return t;
+            }
+        })
+        console.log(this.teams)
         return true;
     }
+    // renameTeam(teamId, newName) {
+    //     let team = this.getTeam(teamId);
+    //     if(team == undefined) {
+    //         return false;
+    //     }
+    //     team.name = newName;
+    //     return true;
+    // }
 
     updateLocation(teamId, location) {
         let team = this.getTeam(teamId);

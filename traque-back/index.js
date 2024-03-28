@@ -64,6 +64,8 @@ io.of("admin").on("connection", (socket) => {
       socket.emit("login_response", true);
       loggedInSockets.push(socket.id);
       loggedIn = true;
+      //Send the current state
+      socket.emit("game_state", game.state)
     } else {
       //Attempt unsuccessful
       socket.emit("login_response", false);
@@ -96,29 +98,16 @@ io.of("admin").on("connection", (socket) => {
     }
   });
 
-  //User is attempting to start the game
-  socket.on("start_game", () => {
+  //User is attempting to change the game state
+  socket.on("change_state", (state) => {
     if(!loggedIn) {
       socket.emit("error", "Not logged in");
       return;
     }
-    if(game.start()) {
-      secureBroadcast("game_started", true);
+    if(game.setState(state)) {
+      secureBroadcast("game_state", game.state);
     }else {
-      socket.emit("error", "Error starting game");
-    }
-  });
-
-  //User is attempting to stop the game
-  socket.on("stop_game", () => {
-    if(!loggedIn) {
-      socket.emit("error", "Not logged in");
-      return;
-    }
-    if(game.stop()) {
-      secureBroadcast("game_started", false);
-    }else {
-      socket.emit("error", "Error stopping game");
+      socket.emit("error", "Error setting state");
     }
   });
 
@@ -137,18 +126,15 @@ io.of("admin").on("connection", (socket) => {
     }
   });
 
-  //Change the name of a team given its id
-  socket.on("rename_team", (teamId, newName) => {
+  socket.on("update_team", (teamId, newTeam) => {
     if(!loggedIn) {
       socket.emit("error", "Not logged in");
       return;
     }
-    if(game.renameTeam(teamId, newName)) {
+    if(game.updateTeam(teamId, newTeam)) {
       secureBroadcast("teams", game.teams);
-    } else {
-      socket.emit("error", "Error renaming team");
     }
-  });
+  })
 
   //Request an update of the team list
   //We only reply to the sender to prevent spam
@@ -191,6 +177,7 @@ io.of("player").on("connection", (socket) => {
     socket.emit("login_response", true);
     socket.emit("enemy_position", team.enemyLocation);
     socket.emit("live_location", team.currentLocation);
+    socket.emit("name", team.name);
   });
 
   socket.on("update_position", (position) => {
