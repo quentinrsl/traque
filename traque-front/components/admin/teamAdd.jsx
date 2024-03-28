@@ -1,6 +1,6 @@
 import React from 'react'
 import TextInput from '../util/textInput'
-import Button from '../util/button'
+import BlueButton from '../util/button'
 
 export default function TeamAddForm({onAddTeam}) {
     const [teamName, setTeamName] = React.useState('');
@@ -15,7 +15,7 @@ export default function TeamAddForm({onAddTeam}) {
                 <TextInput name="teamName" label='Team name' value={teamName} onChange={(e) => setTeamName(e.target.value)}/>
             </div>
             <div className='w-1/5'>
-                <Button type="submit" className="w-5">+</Button>
+                <BlueButton type="submit" className="w-5">+</BlueButton>
             </div>
         </form>
     )

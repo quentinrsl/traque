@@ -4,6 +4,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css'
 import "leaflet-defaulticon-compatibility";
 import "leaflet/dist/leaflet.css";
+import useGame from '@/hook/useGame';
 
 const DEFAULT_ZOOM = 17;
 
@@ -15,7 +16,7 @@ function MapPan(props) {
 
   useEffect(() => {
     if(!initialized && props.center) {
-        map.flyTo(props.center, DEFAULT_ZOOM);
+        map.flyTo(props.center, DEFAULT_ZOOM, {animate: false});
         setInitialized(true)
     }
   },[props.center]);
@@ -23,8 +24,8 @@ function MapPan(props) {
   return null;
 }
 
-export default function LiveMap({enemyPosition, currentPosition, ...props}) {
-
+export default function LiveMap({ ...props}) {
+    const {currentPosition, enemyPosition} = useGame();
     return (
         <MapContainer  {...props} className='min-h-full z-0' center={[0,0]} zoom={0} scrollWheelZoom={true}>
             <TileLayer

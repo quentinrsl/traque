@@ -9,9 +9,12 @@ export function useLocation(interval) {
     const [location, setLocation] = useState();
     useEffect(() => {
         function update() {
+            console.log('Updating location');
             navigator.geolocation.getCurrentPosition((position) => {
                 setLocation([position.coords.latitude, position.coords.longitude]);
-                setTimeout(update, interval);
+                if(interval != Infinity) {
+                    setTimeout(update, interval);
+                }
             }, () => { }, { enableHighAccuracy: true, timeout: Infinity, maximumAge: 0 });
         }
         update();

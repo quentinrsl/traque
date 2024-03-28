@@ -5,24 +5,29 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useSocket } from "./socketContext";
 import { useTeamConnexion } from "./teamConnexionContext";
 
+
 const teamContext = createContext()
 function TeamProvider({children}) {
     const [enemyPosition, setEnemyPosition] = useState();
-    const currentPosition = useLocation(10000);
+    const [currentPosition, setCurrentPosition] = useState();
+    const [gameState, setGameState] = useState(GameState.SETUP);
+    const measuredLocation = useLocation(10000);
     const {teamSocket} = useSocket();
     const {loggedIn} = useTeamConnexion();
     
+    useSocketListener(teamSocket, "game_state", setGameState);
     useSocketListener(teamSocket, "enemy_position", setEnemyPosition);
+    useSocketListener(teamSocket, "live_location", setCurrentPosition);
 
     //Send the current position to the server when the user is logged in
     useEffect(() => {
-        console.log("sending position", currentPosition);
+        console.log("sending position", measuredLocation);
         if(loggedIn) {
-            teamSocket.emit("update_position", currentPosition);
+            teamSocket.emit("update_position", measuredLocation);
         }
-    }, [loggedIn, currentPosition]);
+    }, [loggedIn, measuredLocation]);
     
-    const value = useMemo(() => ({enemyPosition, currentPosition}), [enemyPosition, currentPosition]);
+    const value = useMemo(() => ({enemyPosition, currentPosition, gameState}), [enemyPosition, currentPosition, gameState]);
     return (
         <teamContext.Provider value={value}>
             {children}

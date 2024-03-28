@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 export function useLocalStorage(key, initialValue) {
     const [storedValue, setStoredValue] = useState(initialValue);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         try {
@@ -11,6 +12,7 @@ export function useLocalStorage(key, initialValue) {
         } catch (error) {
             console.log(error);
         }
+        setLoading(false);
     }, []);
 
     const setValue = value => {
@@ -23,5 +25,5 @@ export function useLocalStorage(key, initialValue) {
         }
     }
 
-    return [storedValue, setValue];
+    return [storedValue, setValue, loading];
 }

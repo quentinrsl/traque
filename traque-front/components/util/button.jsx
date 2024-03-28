@@ -1,4 +1,4 @@
-export default function Button({ children, ...props }) {
+export default function BlueButton({ children, ...props }) {
     return (<button {...props} className="bg-blue-600 hover:bg-blue-500 text-lg ease-out duration-200 text-white w-full h-full p-4 shadow-sm rounded">
         {children}
     </button>)

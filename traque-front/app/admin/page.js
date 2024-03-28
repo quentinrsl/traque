@@ -1,36 +1,22 @@
 "use client";
-import TeamAddForm from '@/components/admin/teamAdd';
-import TeamEdit from '@/components/admin/teamEdit';
-import TeamList from '@/components/admin/teamList';
-import { useAdminConnexion } from '@/context/adminConnexionContext';
-import useAdmin from '@/hook/useAdmin';
-import { redirect } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import BlueButton, { GreenButton, RedButton } from "@/components/util/button";
+import { useAdminConnexion } from "@/context/adminConnexionContext";
+import useAdmin from "@/hook/useAdmin";
+import { GameState } from "@/util/gameState";
 
-
-export default function Admin() {
-    const [selectedTeamId, setSelectedTeamId] = useState(null);
-    const { loggedIn } = useAdminConnexion();
-    const { addTeam } = useAdmin();
-
-    useEffect(() => {
-        if (!loggedIn) {
-          redirect("/admin/login");
-        }
-    }, [loggedIn]);
-
-
-
-  return (
-      <div className='h-full p-10 flex flex-row justify-between'> 
-        <div className='w-5/12 h-full p-4 shadow-md rounded outline'>
-          <h2 className='text-2xl text-center'>Team list</h2>
-          <TeamAddForm onAddTeam={addTeam}/>
-          <TeamList selectedTeamId={selectedTeamId} onSelected={setSelectedTeamId}/>
+export default function AdminPage() {
+    const { useProtect }  = useAdminConnexion();
+    const { gameState, changeState } = useAdmin();
+    useProtect();
+    return (
+        <div className='h-full bg-gray-200 p-10 flex flex-col justify-between'>
+            <div className='w-max gap-3 bg-gray-200 p-10 flex flex-col text-center shadow-2xl '>
+                <h2 className="text-2xl">Game state </h2>
+                <strong className="p-5 bg-gray-900 text-white text-xl rounded">Current : {gameState}</strong>
+                <RedButton onClick={() => changeState(GameState.SETUP)}>Reset game</RedButton>
+                <GreenButton onClick={() => changeState(GameState.PLACEMENT)}>Start placement</GreenButton>
+                <BlueButton onClick={() => changeState(GameState.PLAYING)}>Start game</BlueButton>
+            </div>
         </div>
-        <div className='w-5/12 h-full p-4 shadow-md rounded outline'>
-          <TeamEdit selectedTeamId={selectedTeamId} setSelectedTeamId={setSelectedTeamId}/>
-        </div>
-      </div>
-  )
+    )
 }

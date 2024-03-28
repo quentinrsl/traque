@@ -1,32 +1,20 @@
 "use client";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useSocket } from "./socketContext";
-import { useSocketListener } from "@/hook/useSocketListener";
-import { useLocalStorage } from "@/hook/useLocalStorage";
+import { useSocketAuth } from "@/hook/useSocketAuth";
+import { usePasswordProtect } from "@/hook/usePasswordProtect";
 
 const teamConnexionContext = createContext();
 const TeamConnexionProvider = ({ children }) => {
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [teamId, setTeamId] = useLocalStorage("team_id", null);
     const { teamSocket } = useSocket();
+    const { login, password: teamId, loggedIn, loading } = useSocketAuth(teamSocket, "team_password");
+    const useProtect = () => usePasswordProtect("/team", "/team/track", loading, loggedIn);
 
-    useEffect(() => {
-        if (teamId && !loggedIn) {
-            teamSocket.emit("login", teamId);
-        }
-    }, [teamId]);
+    const value = useMemo(() => ({ teamId, login, loggedIn, loading, useProtect}), [teamId, login, loggedIn, loading]);
 
-    function login(id) {
-        setTeamId(id);
-    }
-    
-    useSocketListener(teamSocket, "login_response", setLoggedIn);
-
-    const value = useMemo(() => ({ teamId, login, loggedIn }), [teamId, login, loggedIn]);
-    
     return (
         <teamConnexionContext.Provider value={value}>
-        {children}
+            {children}
         </teamConnexionContext.Provider>
     );
 }
@@ -35,5 +23,5 @@ function useTeamConnexion() {
     return useContext(teamConnexionContext);
 }
 
-export { TeamConnexionProvider, useTeamConnexion};
+export { TeamConnexionProvider, useTeamConnexion };
 

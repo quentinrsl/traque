@@ -1,38 +1,26 @@
 "use client";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext,  useMemo, } from "react";
 import { useSocket } from "./socketContext";
-import { useSocketListener } from "@/hook/useSocketListener";
-import { useLocalStorage } from "@/hook/useLocalStorage";
+import { useSocketAuth } from "@/hook/useSocketAuth";
+import { usePasswordProtect } from "@/hook/usePasswordProtect";
 
-const adminContext = createContext();
+const adminConnexionContext = createContext();
 const AdminConnexionProvider = ({ children }) => {
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [savedPassword, setSavedPassword] = useLocalStorage("admin_password", null);
     const { adminSocket } = useSocket();
+    const { login, loggedIn, loading } = useSocketAuth(adminSocket, "admin_password");
+    const useProtect = () => usePasswordProtect("/admin/login", "/admin", loading, loggedIn);
 
-    useEffect(() => {
-        if (savedPassword && !loggedIn) {
-            adminSocket.emit("login", savedPassword);
-        }
-    }, [savedPassword]);
-
-    function login(password) {
-        setSavedPassword(password)
-    }
-
-    useSocketListener(adminSocket, "login_response", setLoggedIn);
-
-    const value = useMemo(() => ({ login, loggedIn }), [loggedIn]);
+    const value = useMemo(() => ({ login, loggedIn, loading, useProtect }), [loggedIn, loading]);
 
     return (
-        <adminContext.Provider value={value}>
+        <adminConnexionContext.Provider value={value}>
             {children}
-        </adminContext.Provider>
+        </adminConnexionContext.Provider>
     );
 }
 
 function useAdminConnexion() {
-    return useContext(adminContext);
+    return useContext(adminConnexionContext);
 }
 
 export { AdminConnexionProvider, useAdminConnexion };
