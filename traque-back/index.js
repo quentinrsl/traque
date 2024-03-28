@@ -163,6 +163,11 @@ io.of("admin").on("connection", (socket) => {
 });
 
 
+function teamBroadcast(teamId, event, data) {
+  for(let socketId of game.getTeam(teamId).sockets) {
+    io.of("player").to(socketId).emit(event,data)
+  }
+}
 
 io.of("player").on("connection", (socket) => {
   let teamId = null;
@@ -181,12 +186,25 @@ io.of("player").on("connection", (socket) => {
       return;
     }
     teamId = loginTeamId;
-    game.getTeam(loginTeamId).sockets.push(socket.id);
+    let team = game.getTeam(loginTeamId);
+    team.sockets.push(socket.id);
     socket.emit("login_response", true);
+    socket.emit("enemy_position", team.enemyLocation);
+    socket.emit("live_location", team.currentLocation);
   });
 
   socket.on("update_position", (position) => {
-    game.updateLocation(teamId, position);
+    // Only the first player to connect to the team socket can update the current position
+    // This is done to prevent multiple clients from sending slightly different prosition back and forth
+    // Making the point jitter on the map
+    if(!teamId) {
+      socket.emit("error", "not logged in yet");
+      return;
+    }
+    if(game.getTeam(teamId).sockets.indexOf(socket.id) == 0) {
+      game.updateLocation(teamId, position);
+      teamBroadcast(teamId, "live_location", position);
+    }
   });
   
   socket.on("send_position", () => {
@@ -197,8 +215,6 @@ io.of("player").on("connection", (socket) => {
       return;
     }
     game.updateTeamChasing();
-    team.sockets.forEach(s => {
-      io.of("player").to(s).emit("enemy_position", team.enemyLocation);
-    });
+    teamBroadcast(teamId, "enemy_position", team.enemyLocation);
   });
 });
