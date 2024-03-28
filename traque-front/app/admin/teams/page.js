@@ -14,14 +14,14 @@ export default function TeamAdminPage() {
 
 
   return (
-      <div className='h-full p-10 flex flex-row justify-between'> 
-        <div className='w-5/12 h-full p-4 shadow-md rounded'>
+      <div className='h-full bg-gray-200 p-10 flex flex-row justify-between'> 
+        <div className='w-1/2 p-5 bg-white mx-5 h-full p-4 shadow-2xl rounded'>
           <h2 className='text-2xl text-center'>Team list</h2>
           <TeamAddForm onAddTeam={addTeam}/>
           <TeamList selectedTeamId={selectedTeamId} onSelected={setSelectedTeamId}/>
         </div>
-        <div className='w-5/12 h-full p-4 shadow-md rounded'>
-          <TeamEdit selectedTeamId={selectedTeamId} setSelectedTeamId={setSelectedTeamId}/>
+        <div className='w-1/2 p-5 mx-5 bg-white h-full p-4 shadow-2xl rounded'>
+          {selectedTeamId && <TeamEdit selectedTeamId={selectedTeamId} setSelectedTeamId={setSelectedTeamId}/>}
         </div>
       </div>
   )
