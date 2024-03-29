@@ -1,3 +1,5 @@
+import { isInCircle } from "./map_utils.js";
+
 const GameState = {
     SETUP: "setup",
     PLACEMENT: "placement",
@@ -43,7 +45,8 @@ export default class Game {
             enemyLocation: null,
             captureCode: this.createCaptureCode(),
             sockets: [],
-            startingArea: null
+            startingArea: null,
+            ready: false,
         });
         this.updateTeamChasing();
         return true;
@@ -83,21 +86,18 @@ export default class Game {
         console.log(this.teams)
         return true;
     }
-    // renameTeam(teamId, newName) {
-    //     let team = this.getTeam(teamId);
-    //     if(team == undefined) {
-    //         return false;
-    //     }
-    //     team.name = newName;
-    //     return true;
-    // }
-
+    
     updateLocation(teamId, location) {
         let team = this.getTeam(teamId);
         if(team == undefined) {
             return false;
         }
         team.currentLocation = location;
+        //Update the team ready status if they are in their starting area
+        console.log(location, team.startingArea.center)
+        if(this.state == GameState.PLACEMENT && team.startingArea) {
+            team.ready = isInCircle(location, [team.startingArea.center.lat, team.startingArea.center.lng], team.startingArea.radius)
+        }
         return true;
     }
 

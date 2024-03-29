@@ -173,7 +173,8 @@ function sendUpdatedTeamInformations(teamId) {
       currentLocation: team.currentLocation,
       lastSentLocation: team.lastSentLocation,
       captureCode: team.captureCode,
-      startingArea: team.startingArea
+      startingArea: team.startingArea,
+      ready: team.ready
     })
   })
 }
@@ -210,9 +211,10 @@ io.of("player").on("connection", (socket) => {
       socket.emit("error", "not logged in yet");
       return;
     }
-    if(game.getTeam(teamId).sockets.indexOf(socket.id) == 0) {
+    let team = game.getTeam(teamId)
+    if(team.sockets.indexOf(socket.id) == 0) {
       game.updateLocation(teamId, position);
-      teamBroadcast(teamId, "update_team", {currentLocation: position});
+      teamBroadcast(teamId, "update_team", {currentLocation: team.currentLocation, ready:team.ready });
     }
   });
   
