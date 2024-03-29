@@ -51,6 +51,7 @@ export default class Game {
             sockets: [],
             startingArea: null,
             ready: false,
+            captured: false,
         });
         this.updateTeamChasing();
         return true;
@@ -60,13 +61,21 @@ export default class Game {
         if(this.teams.length <= 1) {
             return false;
         }
-        this.teams[0].chased = this.teams[this.teams.length - 1].id;
-        this.teams[this.teams.length - 1].chasing = this.teams[0].id;
-
-        for(let i = 0; i < this.teams.length - 1; i++) {
-            this.teams[i].chasing = this.teams[i + 1].id;
-            this.teams[i+1].chased = this.teams[i].id;
+        let firstTeam = null;
+        let previousTeam = null
+        for(let i = 0; i < this.teams.length; i++ ) {
+            if(!this.teams[i].captured) {
+                if(previousTeam != null) {
+                    this.teams[i].chased = previousTeam;
+                    this.getTeam(previousTeam).chasing = this.teams[i].id;
+                }else {
+                    firstTeam = this.teams[i].id;
+                }
+                previousTeam = this.teams[i].id
+            }
         }
+        this.getTeam(firstTeam).chased = previousTeam;
+        this.getTeam(previousTeam).chasing =firstTeam;
         return true;
     }
 
@@ -87,6 +96,7 @@ export default class Game {
                 return t;
             }
         })
+        this.updateTeamChasing();
         return true;
     }
     
@@ -129,5 +139,15 @@ export default class Game {
         this.teams = this.teams.filter(t => t.id !== teamId);
         this.updateTeamChasing();
         return true;
+    }
+
+    capture(teamId, captureCode) {
+        let enemyTeam = this.getTeam(this.getTeam(teamId).chasing)
+        if(enemyTeam.captureCode == captureCode) {
+            enemyTeam.captured = true;
+            this.updateTeamChasing();
+            return true;
+        }
+        return false;
     }
 }

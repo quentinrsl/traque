@@ -184,7 +184,8 @@ function sendUpdatedTeamInformations(teamId) {
       lastSentLocation: team.lastSentLocation,
       captureCode: team.captureCode,
       startingArea: team.startingArea,
-      ready: team.ready
+      ready: team.ready,
+      captured: team.captured
     })
   })
 }
@@ -228,6 +229,7 @@ io.of("player").on("connection", (socket) => {
     if (team.sockets.indexOf(socket.id) == 0) {
       game.updateLocation(teamId, position);
       teamBroadcast(teamId, "update_team", { currentLocation: team.currentLocation, ready: team.ready });
+      secureBroadcast("teams", game.teams);
     }
   });
 
@@ -241,4 +243,14 @@ io.of("player").on("connection", (socket) => {
     game.updateTeamChasing();
     teamBroadcast(teamId, "update_team", { enemyLocation: team.enemyLocation });
   });
+
+  socket.on('capture', (captureCode) => {
+    if(game.capture(teamId, captureCode)) {
+      sendUpdatedTeamInformations(teamId)
+      sendUpdatedTeamInformations(game.getTeam(teamId).chasing)
+      secureBroadcast("teams", game.teams);
+    }else {
+      socket.emit("error", "Incorrect code")
+    }
+  })
 });
