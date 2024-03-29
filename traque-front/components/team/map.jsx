@@ -82,7 +82,7 @@ export function PlacementMap({ ...props}) {
                 </Popup>
             </Marker>}
             <MapPan center={currentPosition}/>
-            <Circle center={startingArea?.center} radius={startingArea?.radius} color='blue' />
+            {startingArea && <Circle center={startingArea?.center} radius={startingArea?.radius} color='blue' />}
         </MapContainer>
     )
 }

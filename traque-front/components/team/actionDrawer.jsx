@@ -5,13 +5,16 @@ import TextInput from "../util/textInput";
 
 export default function ActionDrawer() {
     const [visible, setVisible] = useState(false);
-    const { sendCurrentPosition } = useGame();
+    const { sendCurrentPosition, name } = useGame();
 
     return (
         <div className={"fixed w-screen  bottom-0 z-10 bg-gray-100 flex justify-center rounded-t-2xl transition-all duration-200 flex flex-col " + (visible ? "h-full" : "h-20")}>
             <img src="/icons/arrow_up.png" className={"w-full object-scale-down h-ful max-h-20 transition-all cursor-pointer duration-200 " + (visible && "rotate-180")} onClick={() => setVisible(!visible)} />
             {visible && <div className="flex flex-col w-full h-full">
                 <div className='shadow-lg mt-0  p-1 flex flex-col text-center mb-1 mt-auto mx-auto w-4/5 rounded'>
+                    <div>
+                        <span className='text-xl text-black'>{name}</span>
+                    </div>
                     <div className='text-gray-700'>
                         <span className='text-lg text-black'>30min</span>
                         <span> before penalty</span>
