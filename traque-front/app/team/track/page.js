@@ -17,16 +17,20 @@ const PlacementMap = dynamic(() => import('@/components/team/map').then((mod) =>
 });
 
 export default function Track() {
-    const { gameState} = useGame();
+    const { gameState, captured} = useGame();
     const { useProtect } = useTeamConnexion();
     useProtect();
     return <>
         {gameState == GameState.SETUP && <WaitingScreen />}
-        {gameState == GameState.PLAYING && <div className='h-full'>
+        {gameState == GameState.PLAYING && !captured && <div className='h-full'>
             <LiveMap />
             <ActionDrawer />
         </div>
         }
+        {gameState == GameState.PLAYING && captured && <div className='h-full'>
+            <div className='text-center text-2xl'>Vous avez été capturé</div> 
+            <div className='text-center text-md'>Instructions de retour ici</div>
+        </div>}
         {gameState == GameState.PLACEMENT &&
             <div className='h-full'>
                 <PlacementOverlay />

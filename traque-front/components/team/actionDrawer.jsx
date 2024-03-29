@@ -6,8 +6,14 @@ import { useTeamConnexion } from "@/context/teamConnexionContext";
 
 export default function ActionDrawer() {
     const [visible, setVisible] = useState(false);
-    const { sendCurrentPosition, name, captureCode } = useGame();
+    const [enemyCaptureCode, setEnemyCaptureCode] = useState("");
+    const { sendCurrentPosition, name, captureCode, capture } = useGame();
     const {logout} = useTeamConnexion();   
+
+    function handleCapture() {
+        capture(enemyCaptureCode);
+        setEnemyCaptureCode("");
+    }
 
     return (
         <div className={"fixed w-screen bottom-0 z-10 bg-gray-100 flex justify-center rounded-t-2xl transition-all duration-200 flex flex-col " + (visible ? "h-full" : "h-20")}>
@@ -43,8 +49,8 @@ export default function ActionDrawer() {
                         <GreenButton onClick={sendCurrentPosition}>See target info</GreenButton>
                     </div>
                     <div className="h-20 flex flex-row">
-                        <TextInput inputMode="numeric" placeholder="Enemy code" onClick={(i) => { console.log(i) }} />
-                        <GreenButton onClick={sendCurrentPosition}>Capture target</GreenButton>
+                        <TextInput inputMode="numeric" placeholder="Enemy code" value={enemyCaptureCode} onChange={(e) => setEnemyCaptureCode(e.target.value)} />
+                        <GreenButton onClick={handleCapture}>Capture target</GreenButton>
                     </div>
                 </div>
                 <div className="h-20">

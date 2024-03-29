@@ -14,17 +14,20 @@ export default function useGame() {
         teamSocket.emit("send_position");
     }
 
-    useEffect(() => console.log("teamInfos", teamInfos), [teamInfos]);
-
+    function capture(captureCode) {
+        teamSocket.emit("capture", captureCode);
+    }
 
     return {
         sendCurrentPosition,
+        capture,
         enemyPosition: teamInfos?.enemyLocation || null,
         currentPosition: teamInfos?.currentLocation || null,
         startingArea: teamInfos?.startingArea || null,
         captureCode: teamInfos?.captureCode || null,
         name: teamInfos?.name || null,
         ready: teamInfos?.ready || false,
+        captured: teamInfos?.captured || false,
         teamId,
         gameState,
     };
