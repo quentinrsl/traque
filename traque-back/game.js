@@ -17,6 +17,10 @@ export default class Game {
         if(Object.values(GameState).indexOf(newState) == -1) {
             return false;
         }
+        //The game has started
+        if(this.state == GameState.PLACEMENT && newState == GameState.PLAYING) {
+            this.initLastSentLocations();
+        }
         this.state = newState;
         return true;
     }
@@ -83,7 +87,6 @@ export default class Game {
                 return t;
             }
         })
-        console.log(this.teams)
         return true;
     }
     
@@ -94,11 +97,18 @@ export default class Game {
         }
         team.currentLocation = location;
         //Update the team ready status if they are in their starting area
-        console.log(location, team.startingArea.center)
-        if(this.state == GameState.PLACEMENT && team.startingArea) {
+        if(this.state == GameState.PLACEMENT && team.startingArea && team.startingArea && location) {
             team.ready = isInCircle(location, [team.startingArea.center.lat, team.startingArea.center.lng], team.startingArea.radius)
         }
         return true;
+    }
+
+    //Make it so that when a team requests the location of a team that has never sent their locaiton
+    //Their position at the begining of the game is sent
+    initLastSentLocations() {
+        for(let team of this.teams) {
+            team.lastSentLocation = team.currentLocation;
+        }
     }
 
     sendLocation(teamId) {
