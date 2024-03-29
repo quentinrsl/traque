@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import TextInput from '../util/textInput'
-import BlueButton from '../util/button';
+import BlueButton, { RedButton } from '../util/button';
 import useAdmin from '@/hook/useAdmin';
 import dynamic from 'next/dynamic';
 
@@ -45,7 +45,8 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                             <BlueButton type="submit">Rename</BlueButton>
                         </div>
                     </form>
-                    <BlueButton onClick={handleRemove}>Remove</BlueButton>
+                    <BlueButton onClick={() => updateTeam(team.id, {captured: !team.captured})}>{team.captured ? "Revive" : "Capture"}</BlueButton>
+                    <RedButton onClick={handleRemove}>Remove</RedButton>
                 </div>
                 <div className='w-1/2 flex flex-col space-y-2 mx-2'>
                     <h2 className='text-2xl text-center'>Team details</h2>
@@ -55,6 +56,7 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                         <p>Chasing : {getTeamName(team.chasing)}</p>
                         <p>Chased by : {getTeamName(team.chased)}</p>
                         <p>Capture code : {String(team.captureCode).padStart(4, '0')}</p>
+                        <p>Captured : {team.captured ? "Yes" : "No"}</p>
                     </div>
                 </div>
             </div>
