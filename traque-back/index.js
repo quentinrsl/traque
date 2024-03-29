@@ -39,6 +39,19 @@ function secureBroadcast(event, data) {
   });
 }
 
+function teamBroadcast(teamId, event, data) {
+  for(let socketId of game.getTeam(teamId).sockets) {
+    io.of("player").to(socketId).emit(event,data)
+  }
+}
+
+function playersBroadcast(event,data) {
+  for(let team of game.teams) {
+    teamBroadcast(team.id,event,data);
+  }
+}
+
+
 
 const game = new Game();
 
@@ -106,6 +119,7 @@ io.of("admin").on("connection", (socket) => {
     }
     if(game.setState(state)) {
       secureBroadcast("game_state", game.state);
+      playersBroadcast("game_state", game.state)
     }else {
       socket.emit("error", "Error setting state");
     }
@@ -133,6 +147,7 @@ io.of("admin").on("connection", (socket) => {
     }
     if(game.updateTeam(teamId, newTeam)) {
       secureBroadcast("teams", game.teams);
+      sendUpdatedTeamInformations(teamId)
     }
   })
 
@@ -149,10 +164,18 @@ io.of("admin").on("connection", (socket) => {
 });
 
 
-function teamBroadcast(teamId, event, data) {
-  for(let socketId of game.getTeam(teamId).sockets) {
-    io.of("player").to(socketId).emit(event,data)
-  }
+function sendUpdatedTeamInformations(teamId) {
+  let team = game.getTeam(teamId)
+  team.sockets.forEach(socketId => {
+    io.of("player").to(socketId).emit("update_team", {
+      name: team.name,
+      enemyLocation: team.enemyLocation,
+      currentLocation: team.currentLocation,
+      lastSentLocation: team.lastSentLocation,
+      captureCode: team.captureCode,
+      startingArea: team.startingArea
+    })
+  })
 }
 
 io.of("player").on("connection", (socket) => {
@@ -175,9 +198,8 @@ io.of("player").on("connection", (socket) => {
     let team = game.getTeam(loginTeamId);
     team.sockets.push(socket.id);
     socket.emit("login_response", true);
-    socket.emit("enemy_position", team.enemyLocation);
-    socket.emit("live_location", team.currentLocation);
-    socket.emit("name", team.name);
+    sendUpdatedTeamInformations(loginTeamId);
+    socket.emit("game_state", game.state)
   });
 
   socket.on("update_position", (position) => {
@@ -190,7 +212,7 @@ io.of("player").on("connection", (socket) => {
     }
     if(game.getTeam(teamId).sockets.indexOf(socket.id) == 0) {
       game.updateLocation(teamId, position);
-      teamBroadcast(teamId, "live_location", position);
+      teamBroadcast(teamId, "update_team", {currentLocation: position});
     }
   });
   
@@ -202,6 +224,6 @@ io.of("player").on("connection", (socket) => {
       return;
     }
     game.updateTeamChasing();
-    teamBroadcast(teamId, "enemy_position", team.enemyLocation);
+    teamBroadcast(teamId, "update_team", {enemyLocation: team.enemyLocation});
   });
 });
