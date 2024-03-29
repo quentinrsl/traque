@@ -24,6 +24,7 @@ export default function useGame() {
         startingArea: teamInfos?.startingArea || null,
         captureCode: teamInfos?.captureCode || null,
         name: teamInfos?.name || null,
+        ready: teamInfos?.ready || false,
         teamId,
         gameState,
     };
