@@ -1,7 +1,8 @@
 "use client";
 import ActionDrawer from '@/components/team/actionDrawer';
 import { useTeamConnexion } from '@/context/teamConnexionContext';
-import useGame, { GameState } from '@/hook/useGame';
+import useGame from '@/hook/useGame';
+import { GameState } from '@/util/gameState';
 import dynamic from 'next/dynamic';
 import React from 'react'
 
@@ -16,7 +17,7 @@ export default function Track() {
     useProtect();
     return ( 
         gameState == GameState.PLAYING && <div className='h-full'>
-            <LiveMap currentPosition={currentPosition} enemyPosition={enemyPosition} />
+            <LiveMap />
             <ActionDrawer />
         </div>
     )

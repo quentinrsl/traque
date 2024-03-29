@@ -26,6 +26,9 @@ function MapPan(props) {
 
 export default function LiveMap({ ...props}) {
     const {currentPosition, enemyPosition} = useGame();
+    useEffect(() => {
+        console.log('Current position', currentPosition);
+    }, [currentPosition]);
     return (
         <MapContainer  {...props} className='min-h-full z-0' center={[0,0]} zoom={0} scrollWheelZoom={true}>
             <TileLayer
@@ -54,6 +57,19 @@ export default function LiveMap({ ...props}) {
                     Position de l'ennemi
                 </Popup>
             </Marker>}
+            <MapPan center={currentPosition}/>
+        </MapContainer>
+    )
+}
+
+export function PlacementMap({ ...props}) {
+    const {currentPosition, startingArea} = useGame();
+    return (
+        <MapContainer  {...props} className='min-h-full w-full' scrollWheelZoom={true}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
             <MapPan center={currentPosition}/>
         </MapContainer>
     )

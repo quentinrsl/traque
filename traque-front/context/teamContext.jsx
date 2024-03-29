@@ -1,23 +1,28 @@
 "use client";
 import { useLocation } from "@/hook/useLocation";
 import { useSocketListener } from "@/hook/useSocketListener";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useSocket } from "./socketContext";
 import { useTeamConnexion } from "./teamConnexionContext";
+import { GameState } from "@/util/gameState";
 
 
 const teamContext = createContext()
 function TeamProvider({children}) {
-    const [enemyPosition, setEnemyPosition] = useState();
-    const [currentPosition, setCurrentPosition] = useState();
+    const [teamInfos, setTeamInfos] = useState({});
     const [gameState, setGameState] = useState(GameState.SETUP);
     const measuredLocation = useLocation(10000);
     const {teamSocket} = useSocket();
     const {loggedIn} = useTeamConnexion();
+    const teamInfosRef = useRef();
+
+    teamInfosRef.current = teamInfos;
+
+    useSocketListener(teamSocket, "update_team", (newTeamInfos) => {
+        setTeamInfos({...teamInfosRef.current, ...newTeamInfos});
+    });
     
     useSocketListener(teamSocket, "game_state", setGameState);
-    useSocketListener(teamSocket, "enemy_position", setEnemyPosition);
-    useSocketListener(teamSocket, "live_location", setCurrentPosition);
 
     //Send the current position to the server when the user is logged in
     useEffect(() => {
@@ -27,7 +32,7 @@ function TeamProvider({children}) {
         }
     }, [loggedIn, measuredLocation]);
     
-    const value = useMemo(() => ({enemyPosition, currentPosition, gameState}), [enemyPosition, currentPosition, gameState]);
+    const value = useMemo(() => ({teamInfos, gameState}), [teamInfos, gameState]);
     return (
         <teamContext.Provider value={value}>
             {children}

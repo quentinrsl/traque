@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect} from "react";
 
 export function useSocketListener(socket, event, callback) {
-    return useState(() => {
-        socket.on(event, callback);
+    useEffect(() => {
+        socket.on(event,callback);
         return () => {
             socket.off(event, callback);
         }
