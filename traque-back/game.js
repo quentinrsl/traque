@@ -18,7 +18,7 @@ export default class Game {
             return false;
         }
         //The game has started
-        if(this.state == GameState.PLACEMENT && newState == GameState.PLAYING) {
+        if(newState == GameState.PLAYING) {
             this.initLastSentLocations();
         }
         this.state = newState;

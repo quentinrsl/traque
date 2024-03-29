@@ -245,9 +245,10 @@ io.of("player").on("connection", (socket) => {
   });
 
   socket.on('capture', (captureCode) => {
+    let capturedTeam = game.getTeam(teamId).chasing
     if(game.capture(teamId, captureCode)) {
       sendUpdatedTeamInformations(teamId)
-      sendUpdatedTeamInformations(game.getTeam(teamId).chasing)
+      sendUpdatedTeamInformations(capturedTeam)
       secureBroadcast("teams", game.teams);
     }else {
       socket.emit("error", "Incorrect code")
