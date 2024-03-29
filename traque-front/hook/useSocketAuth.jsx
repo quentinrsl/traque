@@ -4,6 +4,7 @@ import { useLocalStorage } from './useLocalStorage';
 import { usePathname } from 'next/navigation';
 
 const LOGIN_MESSAGE = "login";
+const LOGOUT_MESSAGE = "logout";
 const LOGIN_RESPONSE_MESSAGE = "login_response";
 
 export function useSocketAuth(socket, passwordName) {
@@ -13,13 +14,22 @@ export function useSocketAuth(socket, passwordName) {
     const [savedPassword, setSavedPassword, savedPasswordLoading] = useLocalStorage(passwordName, null);
     
     useEffect(() => {
+        console.log("Checking saved password", savedPassword, loggedIn);
         if (savedPassword && !loggedIn) {
+            console.log("Logging in with saved password", savedPassword);
             socket.emit(LOGIN_MESSAGE, savedPassword);
         }
     }, [savedPassword]);
 
     function login(password) {
+        console.log("Logging", password);
         setSavedPassword(password)
+    }
+
+    function logout() {
+        setSavedPassword(null);
+        setLoggedIn(false);
+        socket.emit(LOGOUT_MESSAGE)
     }
 
     useSocketListener(socket, LOGIN_RESPONSE_MESSAGE,(loginResponse) => {
@@ -39,5 +49,5 @@ export function useSocketAuth(socket, passwordName) {
     }, [waitingForResponse, savedPasswordLoading, savedPassword]);
 
 
-    return {login,password: savedPassword, loggedIn, loading};
+    return {login,logout,password: savedPassword, loggedIn, loading};
 }
