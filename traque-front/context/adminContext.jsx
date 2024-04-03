@@ -9,6 +9,7 @@ const adminContext = createContext();
 
 function AdminProvider({children}) {
     const [teams, setTeams] = useState([]);
+    const [zone, setZone] = useState(null)
     const { adminSocket } = useSocket();
     const {loggedIn} = useAdminConnexion();
     const [gameState, setGameState] = useState(GameState.SETUP);
@@ -21,8 +22,9 @@ function AdminProvider({children}) {
 
     //Bind listeners to update the team list and the game status on socket message
     useSocketListener(adminSocket, "teams", setTeams);
+    useSocketListener(adminSocket, "zone", setZone);
 
-    const value = useMemo(() => ({teams, setTeams, gameState}), [teams, gameState]);
+    const value = useMemo(() => ({teams, zone, setZone, setTeams, gameState}), [zone,teams, gameState]);
     return (
         <adminContext.Provider value={value}>
             {children}

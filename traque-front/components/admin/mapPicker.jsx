@@ -50,18 +50,36 @@ export function CircularAreaPicker({area, setArea, ...props}) {
             <MapEventListener onClick={handleClick} onMouseMove={handleMouseMove} />
         </MapContainer>)
 }
-
-export function ZonePicker({minArea, setMinArea, maxArea, setMaxArea, ...props}) {
+export const EditMode = {
+    MIN: 0,
+    MAX: 1
+}
+export function ZonePicker({minArea, setMinArea, maxArea, setMaxArea,editMode, ...props}) {
     const location = useLocation(Infinity);
     const {handleClick: maxClick, handleMouseMove: maxHover, center: maxCenter, radius: maxRadius} = useMapCircleDraw(minArea, setMinArea);
     const {handleClick: minClick, handleMouseMove: minHover, center: minCenter, radius: minRadius} = useMapCircleDraw(maxArea, setMaxArea);
+    function handleClick(e) {
+        if (editMode == EditMode.MAX) {
+            maxClick(e);
+        } else {
+            minClick(e);
+        }
+    }
+    function handleMouseMove(e) {
+        if (editMode == EditMode.MAX) {
+            maxHover(e);
+        } else {
+            minHover(e);
+        }
+    }
     return (
         <MapContainer  {...props} className='min-h-full w-full ' center={[0, 0]} zoom={0} scrollWheelZoom={true}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {center && radius && <Circle center={center} radius={radius} fillColor="blue"/>}
+            {minCenter && minRadius && <Circle center={minCenter} radius={minRadius} color="blue" fillColor="blue"/>}
+            {maxCenter && maxRadius && <Circle center={maxCenter} radius={maxRadius} color="red" fillColor="red"/>}
             <MapPan center={location} zoom={DEFAULT_ZOOM} />
             <MapEventListener onClick={handleClick} onMouseMove={handleMouseMove} />
         </MapContainer>)
