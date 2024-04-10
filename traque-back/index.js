@@ -95,6 +95,17 @@ io.of("admin").on("connection", (socket) => {
     }
   });
 
+  socket.on("set_zone", (zone) => {
+    if (!loggedIn) {
+      socket.emit("error", "Not logged in");
+      return;
+    }
+    if(!game.setZone(zone)) {
+      socket.emit("error", "Error changing zone");
+    }
+
+  })
+
   //User is attempting to add a new team
   socket.on("add_team", (teamName) => {
     if (!loggedIn) {
