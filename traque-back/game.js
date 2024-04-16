@@ -1,4 +1,5 @@
 import { isInCircle } from "./map_utils.js";
+import { ZoneManager } from "./zoneManager.js";
 
 const GameState = {
     SETUP: "setup",
@@ -8,10 +9,10 @@ const GameState = {
 }
 
 export default class Game {
-    constructor() {
+    constructor(onUpdateZone,onUpdateNewZone) {
         this.teams = [];
         this.state = GameState.SETUP;
-        this.zone = new ZoneManager(null, null)
+        this.zone = new ZoneManager(onUpdateZone, onUpdateNewZone)
     }
 
     setState(newState) {
@@ -21,6 +22,11 @@ export default class Game {
         //The game has started
         if(newState == GameState.PLAYING) {
             this.initLastSentLocations();
+            this.zone.reset()
+            this.zone.start()
+        }
+        if(newState != GameState.PLAYING) {
+            this.zone.reset();
         }
         this.state = newState;
         return true;
@@ -152,9 +158,15 @@ export default class Game {
         return false;
     }
 
-    setZone(newSettings) {
+    /**
+     * Change the settings of the Zone manager
+     * The game should not be in PLAYING or FINISHED state
+     * @param {Object} newSettings The object containing the settings to be changed
+     * @returns false if failed
+     */
+    setZoneSettings(newSettings) {
         //cannot change zones while playing
-        if(game.state == GameState.PLAYING || game.state == GameState.FINISHED) {
+        if(this.state == GameState.PLAYING || this.state == GameState.FINISHED) {
             return false;
         }
         this.zone.udpateSettings(newSettings)

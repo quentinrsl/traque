@@ -29,7 +29,7 @@ const io = new Server(httpsServer, {
 
 
 /**
- * Send a message to all logged in sockets
+ * Send a message to all logged in admin sockets
  * @param {String} event The event name
  * @param {String} data The data to send
  */
@@ -39,27 +39,52 @@ function secureBroadcast(event, data) {
   });
 }
 
+/**
+ * Send a socket message to all the players of a team
+ * @param {String} teamId The team that will receive the message
+ * @param {String} event Event name
+ * @param {*} data The payload
+ */
 function teamBroadcast(teamId, event, data) {
   for (let socketId of game.getTeam(teamId).sockets) {
     io.of("player").to(socketId).emit(event, data)
   }
 }
 
+/**
+ * Send a message to all logged in players 
+ * @param {String} event Event name
+ * @param {String} data payload
+ */
 function playersBroadcast(event, data) {
   for (let team of game.teams) {
     teamBroadcast(team.id, event, data);
   }
 }
 
+/**
+ * Remove a player from the list of logged in players
+ * @param {Number} id The id of the player to log out
+ */
 function logoutPlayer(id) {
   for (let team of game.teams) {
     team.sockets = team.sockets.filter((sid) => sid != id);
   }
 }
 
+//Zone update broadcast function, called by the game object
+function onUpdateNewZone(newZone) {
+  playersBroadcast("new_zone", newZone)
+  secureBroadcast("new_zone", newZone)
+}
+
+function onUpdateZone(zone) {
+  playersBroadcast("zone", zone)
+  secureBroadcast("zone", "zone")
+}
 
 
-const game = new Game();
+const game = new Game(onUpdateZone, onUpdateNewZone);
 
 //Array of logged in sockets
 let loggedInSockets = [];
@@ -95,14 +120,15 @@ io.of("admin").on("connection", (socket) => {
     }
   });
 
-  socket.on("set_zone", (zone) => {
+  socket.on("set_zone_settings", (zone) => {
     if (!loggedIn) {
       socket.emit("error", "Not logged in");
       return;
     }
-    if(!game.setZone(zone)) {
+    if(!game.setZoneSettings(zone)) {
       socket.emit("error", "Error changing zone");
     }
+
 
   })
 
