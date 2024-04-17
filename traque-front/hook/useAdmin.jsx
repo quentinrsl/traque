@@ -2,7 +2,7 @@ import { useAdminContext } from "@/context/adminContext";
 import { useSocket } from "@/context/socketContext";
 
 export default function useAdmin(){
-    const {teams, gameState, zone } = useAdminContext();
+    const {teams, gameState, zoneSettings } = useAdminContext();
     const {adminSocket} = useSocket();
 
     function pollTeams() {
@@ -38,10 +38,10 @@ export default function useAdmin(){
         adminSocket.emit("change_state", state);
     }
 
-    function setZone(zone) {
-        adminSocket.emit("set_zone", zone);
+    function changeZoneSettings(zone) {
+        adminSocket.emit("set_zone_settings", zone);
     }
 
-    return {teams, zone, gameState,setZone, pollTeams, getTeam, getTeamName, reorderTeams, addTeam, removeTeam, changeState, updateTeam };
+    return {teams, zoneSettings, gameState,changeZoneSettings, pollTeams, getTeam, getTeamName, reorderTeams, addTeam, removeTeam, changeState, updateTeam };
 
 }
