@@ -169,6 +169,6 @@ export default class Game {
         if(this.state == GameState.PLAYING || this.state == GameState.FINISHED) {
             return false;
         }
-        this.zone.udpateSettings(newSettings)
+        return this.zone.udpateSettings(newSettings)
     }
 }

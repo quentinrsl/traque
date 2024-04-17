@@ -33,7 +33,7 @@ const io = new Server(httpsServer, {
  * @param {String} event The event name
  * @param {String} data The data to send
  */
-function secureBroadcast(event, data) {
+function secureAdminBroadcast(event, data) {
   loggedInSockets.forEach(s => {
     io.of("admin").to(s).emit(event, data);
   });
@@ -74,13 +74,15 @@ function logoutPlayer(id) {
 
 //Zone update broadcast function, called by the game object
 function onUpdateNewZone(newZone) {
+  console.log("new_zone", newZone)
   playersBroadcast("new_zone", newZone)
-  secureBroadcast("new_zone", newZone)
+  secureAdminBroadcast("new_zone", newZone)
 }
 
 function onUpdateZone(zone) {
+  console.log("zone update",zone);
   playersBroadcast("zone", zone)
-  secureBroadcast("zone", "zone")
+  secureAdminBroadcast("zone", zone)
 }
 
 
@@ -114,21 +116,26 @@ io.of("admin").on("connection", (socket) => {
       loggedIn = true;
       //Send the current state
       socket.emit("game_state", game.state)
+      //Other settings that need initialization
+      socket.emit("zone_settings", game.zone.zoneSettings)
+      
     } else {
       //Attempt unsuccessful
       socket.emit("login_response", false);
     }
   });
 
-  socket.on("set_zone_settings", (zone) => {
+  socket.on("set_zone_settings", (settings) => {
     if (!loggedIn) {
       socket.emit("error", "Not logged in");
       return;
     }
-    if(!game.setZoneSettings(zone)) {
+    if(!game.setZoneSettings(settings)) {
       socket.emit("error", "Error changing zone");
+      socket.emit("zone_settings", game.zone.zoneSettings) //Still broadcast the old config to the client who submited an incorrect config to keep the client up to date
+    }else {
+      secureAdminBroadcast("zone_settings", game.zone.zoneSettings)
     }
-
 
   })
 
@@ -139,7 +146,7 @@ io.of("admin").on("connection", (socket) => {
       return;
     }
     if (game.addTeam(teamName)) {
-      secureBroadcast("teams", game.teams);
+      secureAdminBroadcast("teams", game.teams);
     } else {
       socket.emit("error", "Error adding team");
     }
@@ -152,7 +159,7 @@ io.of("admin").on("connection", (socket) => {
       return;
     }
     if (game.removeTeam(teamId)) {
-      secureBroadcast("teams", game.teams);
+      secureAdminBroadcast("teams", game.teams);
     } else {
       socket.emit("error", "Error removing team");
     }
@@ -165,7 +172,7 @@ io.of("admin").on("connection", (socket) => {
       return;
     }
     if (game.setState(state)) {
-      secureBroadcast("game_state", game.state);
+      secureAdminBroadcast("game_state", game.state);
       playersBroadcast("game_state", game.state)
     } else {
       socket.emit("error", "Error setting state");
@@ -181,7 +188,7 @@ io.of("admin").on("connection", (socket) => {
       return;
     }
     if (game.reorderTeams(newOrder)) {
-      secureBroadcast("teams", game.teams);
+      secureAdminBroadcast("teams", game.teams);
     } else {
       socket.emit("error", "Error reordering teams");
     }
@@ -193,7 +200,7 @@ io.of("admin").on("connection", (socket) => {
       return;
     }
     if (game.updateTeam(teamId, newTeam)) {
-      secureBroadcast("teams", game.teams);
+      secureAdminBroadcast("teams", game.teams);
       sendUpdatedTeamInformations(teamId)
     }
   })
@@ -266,7 +273,7 @@ io.of("player").on("connection", (socket) => {
     if (team.sockets.indexOf(socket.id) == 0) {
       game.updateLocation(teamId, position);
       teamBroadcast(teamId, "update_team", { currentLocation: team.currentLocation, ready: team.ready });
-      secureBroadcast("teams", game.teams);
+      secureAdminBroadcast("teams", game.teams);
     }
   });
 
@@ -286,7 +293,7 @@ io.of("player").on("connection", (socket) => {
     if(game.capture(teamId, captureCode)) {
       sendUpdatedTeamInformations(teamId)
       sendUpdatedTeamInformations(capturedTeam)
-      secureBroadcast("teams", game.teams);
+      secureAdminBroadcast("teams", game.teams);
     }else {
       socket.emit("error", "Incorrect code")
     }
