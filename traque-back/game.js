@@ -11,6 +11,7 @@ export default class Game {
     constructor() {
         this.teams = [];
         this.state = GameState.SETUP;
+        this.zone = new ZoneManager(null, null)
     }
 
     setState(newState) {
@@ -149,5 +150,13 @@ export default class Game {
             return true;
         }
         return false;
+    }
+
+    setZone(newSettings) {
+        //cannot change zones while playing
+        if(game.state == GameState.PLAYING || game.state == GameState.FINISHED) {
+            return false;
+        }
+        this.zone.udpateSettings(newSettings)
     }
 }
