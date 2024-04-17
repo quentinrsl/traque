@@ -11,8 +11,8 @@ export class ZoneManager {
         //a call to onZoneUpdate will be made every updateIntervalSeconds when the zone is changing
         //a call to onNextZoneUpdate will be made when the zone reduction ends and a new next zone is announced
         this.zoneSettings = {
-            min: {center: null, radius: null},
-            max: {center: null, radius: null},
+            min: { center: null, radius: null },
+            max: { center: null, radius: null },
             reductionCount: 2,
             reductionDuration: 1,
             reductionInterval: 1,
@@ -20,14 +20,14 @@ export class ZoneManager {
         }
         this.shrinkFactor = null;
         //Live location of the zone
-        this.currentZone =  {center: null, radius: null};
+        this.currentZone = { center: null, radius: null };
 
         //If the zone is shrinking, this is the target of the current shrinking
         //If the zone is not shrinking, this will be the target of the next shrinking
-        this.nextZone = {center: null, radius: null};
+        this.nextZone = { center: null, radius: null };
 
         //Zone at the begining of the shrinking
-        this.currentStartZone = {center: null, radius: null};
+        this.currentStartZone = { center: null, radius: null };
 
         this.startDate = null;
         this.started = false;
@@ -36,6 +36,28 @@ export class ZoneManager {
 
         this.onZoneUpdate = onZoneUpdate;
         this.onNextZoneUpdate = onNextZoneUpdate
+    }
+
+    /**
+     * Test if a given configuration object is valid, i.e if all needed values are well defined
+     * @param {Object} settings Settings object describing a config of a zone manager
+     * @returns if the config is correct
+     */
+    validateSettings(settings) {
+        if (settings.reductionCount && (typeof settings.reductionCount != "number" || settings.reductionCount <= 0)) { return false }
+        if (settings.reductionDuration && (typeof settings.reductionDuration != "number" || settings.reductionDuration < 0)) { return false }
+        if (settings.reductionInterval && (typeof settings.reductionInterval != "number" || settings.reductionInterval < 0)) { return false }
+        if (settings.updateIntervalSeconds && (typeof settings.updateIntervalSeconds != "number" || settings.updateIntervalSeconds <= 0)) { return false }
+        if (settings.max && (typeof settings.max.radius != "number" || typeof settings.max.center.lat != "number" || typeof settings.max.center.lng != "number")) { return false }
+        if (settings.min && (typeof settings.min.radius != "number" || typeof settings.min.center.lat != "number" || typeof settings.min.center.lng != "number")) { return false }
+        return true;
+    }
+    /**
+     *  Test if the zone manager is ready to start 
+     * @returns true if the zone manager is ready to be started, false otherwise
+     */
+    ready() {
+        return this.validateSettings(this.zoneSettings);
     }
 
     /**
@@ -55,14 +77,8 @@ export class ZoneManager {
      */
     udpateSettings(newSettings) {
         //validate settings
-        if(newSettings.reductionCount &&(typeof newSettings.reductionCount != "number" || newSettings.reductionCount <= 0)) {return false}
-        if(newSettings.reductionDuration &&(typeof newSettings.reductionDuration != "number" || newSettings.reductionDuration <= 0)) {return false}
-        if(newSettings.reductionInterval &&(typeof newSettings.reductionInterval != "number" || newSettings.reductionInterval <= 0)) {return false}
-        if(newSettings.updateIntervalSeconds &&(typeof newSettings.updateIntervalSeconds != "number" || newSettings.updateIntervalSeconds <= 0)) {return false}
-        if(newSettings.max && (typeof newSettings.max.radius != "number" || typeof newSettings.max.center.lat != "number" || typeof newSettings.max.center.lng != "number")) {return false}
-        if(newSettings.min && (typeof newSettings.min.radius != "number" || typeof newSettings.min.center.lat != "number" || typeof newSettings.min.center.lng != "number")) {return false}
-        this.zoneSettings = {...this.zoneSettings, ...newSettings};
-        this.shrinkFactor = Math.pow(this.zoneSettings.min.radius / this.zoneSettings.max.radius, 1/this.zoneSettings.reductionCount)
+        this.zoneSettings = { ...this.zoneSettings, ...newSettings };
+        this.shrinkFactor = Math.pow(this.zoneSettings.min.radius / this.zoneSettings.max.radius, 1 / this.zoneSettings.reductionCount)
         return true;
     }
 
@@ -72,11 +88,11 @@ export class ZoneManager {
     reset() {
         this.currentZoneCount = 0;
         this.started = false;
-        if(this.updateIntervalId != null) {
+        if (this.updateIntervalId != null) {
             clearInterval(this.updateIntervalId);
             this.updateIntervalId = null;
         }
-        if(this.nextZoneTimeoutId != null) {
+        if (this.nextZoneTimeoutId != null) {
             clearTimeout(this.nextZoneTimeoutId);
             this.nextZoneTimeoutId = null;
         }
@@ -106,13 +122,13 @@ export class ZoneManager {
         let ok = false;
         let res = null
         //take a random point satisfying both conditions
-        while(!ok) {
-            res = randomCirclePoint({latitude: this.currentZone.center.lat, longitude: this.currentZone.center.lng}, this.currentZone.radius - newRadius);
-           ok = (isInCircle({lat:res.latitude, lng: res.longitude}, this.zoneSettings.min.center, newRadius - this.zoneSettings.min.radius)) 
+        while (!ok) {
+            res = randomCirclePoint({ latitude: this.currentZone.center.lat, longitude: this.currentZone.center.lng }, this.currentZone.radius - newRadius);
+            ok = (isInCircle({ lat: res.latitude, lng: res.longitude }, this.zoneSettings.min.center, newRadius - this.zoneSettings.min.radius))
         }
         return {
-         lat: res.latitude,
-         lng: res.longitude
+            lat: res.latitude,
+            lng: res.longitude
         }
     }
 
@@ -121,27 +137,29 @@ export class ZoneManager {
      * Wait for the appropriate duration before starting a new zone reduction if needed
      */
     setNextZone() {
-        console.log("Setting next zone",this.currentZoneCount,this.zoneSettings.reductionCount)
+        console.log("Setting next zone", this.currentZoneCount, this.zoneSettings.reductionCount, this.zoneSettings.reductionInterval)
         //At this point, nextZone == currentZone, we need to update the next zone, the raidus decrement, and start a timer before the next shrink
         //last zone
-        if(this.currentZoneCount == this.zoneSettings.reductionCount - 1) {
-            this.nextZone =JSON.parse(JSON.stringify(this.zoneSettings.min)) 
-            this.currentStartZone =JSON.parse(JSON.stringify(this.zoneSettings.min)) 
-            this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionIntervalMinutes)
+        if (this.currentZoneCount == this.zoneSettings.reductionCount) {
+            console.log("last zone reached")
+            this.nextZone = JSON.parse(JSON.stringify(this.zoneSettings.min))
+            this.currentStartZone = JSON.parse(JSON.stringify(this.zoneSettings.min))
+        } else if (this.currentZoneCount == this.zoneSettings.reductionCount - 1) {
+            this.nextZone = JSON.parse(JSON.stringify(this.zoneSettings.min))
+            this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionInterval)
             this.currentZoneCount++;
-        }else if(this.currentZoneCount < this.zoneSettings.reductionCount - 1){
+        } else if (this.currentZoneCount < this.zoneSettings.reductionCount) {
+            console.log("started timer for next zone")
             this.nextZone.center = this.getRandomNextCenter(this.nextZone.radius * this.shrinkFactor)
-            console.log(this.nextZone, this.shrinkFactor)
             this.nextZone.radius *= this.shrinkFactor;
-            console.log(this.nextZone, this.shrinkFactor)
             this.currentStartZone = JSON.parse(JSON.stringify(this.currentZone))
-            this.onNextZoneUpdate({
-                begin: JSON.parse(JSON.stringify(this.currentStartZone)),
-                end: JSON.parse(JSON.stringify(this.nextZone))
-            })
-            this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionIntervalMinutes)
+            this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionInterval)
             this.currentZoneCount++;
         }
+        this.onNextZoneUpdate({
+            begin: JSON.parse(JSON.stringify(this.currentStartZone)),
+            end: JSON.parse(JSON.stringify(this.nextZone))
+        })
     }
 
     /*
@@ -154,12 +172,12 @@ export class ZoneManager {
         console.log("started shrinking")
         this.updateIntervalId = setInterval(() => {
             console.log("Shrink tick")
-            const completed = ((new Date() - startTime) / (1000 * 60)) / this.zoneSettings.reductionDuration; 
+            const completed = ((new Date() - startTime) / (1000 * 60)) / this.zoneSettings.reductionDuration;
             console.log(completed)
             this.currentZone.radius = map(completed, 0, 1, this.currentStartZone.radius, this.nextZone.radius)
             this.onZoneUpdate(JSON.parse(JSON.stringify(this.currentZone)))
             //Zone shrinking is over
-            if(completed >= 1) {
+            if (completed >= 1) {
                 clearInterval(this.updateIntervalId);
                 this.updateIntervalId = null;
                 this.setNextZone();

@@ -21,6 +21,9 @@ export default class Game {
         }
         //The game has started
         if(newState == GameState.PLAYING) {
+            if(!this.zone.ready()) {
+                return false;
+            }
             this.initLastSentLocations();
             this.zone.reset()
             this.zone.start()
