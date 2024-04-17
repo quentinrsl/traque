@@ -4,7 +4,11 @@ import BlueButton, { GreenButton, RedButton } from "@/components/util/button";
 import { useAdminConnexion } from "@/context/adminConnexionContext";
 import useAdmin from "@/hook/useAdmin";
 import { GameState } from "@/util/gameState";
+import dynamic from "next/dynamic";
 
+const ZoneSelector = dynamic(() => import('@/components/admin/zoneSelector').then((mod) => mod.ZoneSelector), {
+    ssr: false
+});
 export default function AdminPage() {
     const { useProtect }  = useAdminConnexion();
     const { gameState, changeState } = useAdmin();
@@ -19,6 +23,7 @@ export default function AdminPage() {
                 <BlueButton onClick={() => changeState(GameState.PLAYING)}>Start game</BlueButton>
             </div>
             {gameState == GameState.PLACEMENT && <div className="max-h-5/6"><TeamReady /></div>}
+            {gameState == GameState.SETUP && <ZoneSelector />}
         </div>
     )
 }

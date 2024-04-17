@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "./useLocation";
 
 export function useMapCircleDraw(area, setArea) {
     const [drawing, setDrawing] = useState(false);

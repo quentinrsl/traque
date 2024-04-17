@@ -1,7 +1,7 @@
 "use client";
 import { useLocation } from "@/hook/useLocation";
 import { useSocketListener } from "@/hook/useSocketListener";
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, use, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useSocket } from "./socketContext";
 import { useTeamConnexion } from "./teamConnexionContext";
 import { GameState } from "@/util/gameState";
@@ -11,6 +11,8 @@ const teamContext = createContext()
 function TeamProvider({children}) {
     const [teamInfos, setTeamInfos] = useState({});
     const [gameState, setGameState] = useState(GameState.SETUP);
+    const [zone, setZone] = useState(null);
+    const [zoneExtremities, setZoneExtremities] = useState(null);
     const measuredLocation = useLocation(10000);
     const {teamSocket} = useSocket();
     const {loggedIn} = useTeamConnexion();
@@ -23,6 +25,9 @@ function TeamProvider({children}) {
     });
     
     useSocketListener(teamSocket, "game_state", setGameState);
+    useSocketListener(teamSocket, "zone", setZone);
+    useSocketListener(teamSocket, "new_zone", setZoneExtremities);
+
 
     //Send the current position to the server when the user is logged in
     useEffect(() => {
@@ -32,7 +37,7 @@ function TeamProvider({children}) {
         }
     }, [loggedIn, measuredLocation]);
     
-    const value = useMemo(() => ({teamInfos, gameState}), [teamInfos, gameState]);
+    const value = useMemo(() => ({teamInfos, gameState, zone, zoneExtremities}), [teamInfos, gameState, zone, zoneExtremities]);
     return (
         <teamContext.Provider value={value}>
             {children}
