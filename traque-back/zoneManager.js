@@ -16,7 +16,7 @@ export class ZoneManager {
             reductionCount: 2,
             reductionDuration: 1,
             reductionInterval: 1,
-            updateIntervalSeconds: 10,
+            updateIntervalSeconds: 1,
         }
         this.shrinkFactor = null;
         //Live location of the zone
@@ -145,6 +145,7 @@ export class ZoneManager {
             this.nextZone = JSON.parse(JSON.stringify(this.zoneSettings.min))
             this.currentStartZone = JSON.parse(JSON.stringify(this.zoneSettings.min))
         } else if (this.currentZoneCount == this.zoneSettings.reductionCount - 1) {
+            this.currentStartZone = JSON.parse(JSON.stringify(this.currentZone))
             this.nextZone = JSON.parse(JSON.stringify(this.zoneSettings.min))
             this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionInterval)
             this.currentZoneCount++;
@@ -175,6 +176,8 @@ export class ZoneManager {
             const completed = ((new Date() - startTime) / (1000 * 60)) / this.zoneSettings.reductionDuration;
             console.log(completed)
             this.currentZone.radius = map(completed, 0, 1, this.currentStartZone.radius, this.nextZone.radius)
+            this.currentZone.center.lat = map(completed,0,1, this.currentStartZone.center.lat, this.nextZone.center.lat)
+            this.currentZone.center.lng = map(completed,0,1, this.currentStartZone.center.lng, this.nextZone.center.lng)
             this.onZoneUpdate(JSON.parse(JSON.stringify(this.currentZone)))
             //Zone shrinking is over
             if (completed >= 1) {
