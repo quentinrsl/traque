@@ -42,10 +42,12 @@ export function sendUpdatedTeamInformations(teamId) {
             enemyLocation: team.enemyLocation,
             currentLocation: team.currentLocation,
             lastSentLocation: team.lastSentLocation,
+            lastSentLocationDate: team.lastSentLocationDate,
             captureCode: team.captureCode,
             startingArea: team.startingArea,
             ready: team.ready,
-            captured: team.captured
+            captured: team.captured,
+            penalties: team.penalties,
         })
     })
 }

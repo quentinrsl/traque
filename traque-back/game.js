@@ -1,7 +1,7 @@
 import { isInCircle } from "./map_utils.js";
 import { ZoneManager } from "./zone_manager.js";
 
-const GameState = {
+export const GameState = {
     SETUP: "setup",
     PLACEMENT: "placement",
     PLAYING: "playing",
@@ -10,8 +10,6 @@ const GameState = {
 
 export default class Game {
     constructor(onUpdateZone,onUpdateNewZone) {
-        //Number of penalties needed to be eliminated
-        this.MAX_PENALTIES = 3;
         this.teams = [];
         this.state = GameState.SETUP;
         this.zone = new ZoneManager(onUpdateZone, onUpdateNewZone)
@@ -58,6 +56,7 @@ export default class Game {
             chased: null,
             currentLocation: null,
             lastSentLocation: null,
+            lastSentLocationDate: null,
             enemyLocation: null,
             captureCode: this.createCaptureCode(),
             sockets: [],
@@ -70,8 +69,18 @@ export default class Game {
         return true;
     }
 
+    playingTeamCount() {
+        let res = 0;
+        this.teams.forEach((t) => {
+            if(!t.captured) {
+                res++;
+            }
+        })
+        return res;
+    }
+
     updateTeamChasing() {
-        if(this.teams.length <= 1) {
+        if(this.playingTeamCount() <= 1) {
             return false;
         }
         let firstTeam = null;
@@ -139,8 +148,11 @@ export default class Game {
         if(team == undefined) {
             return false;
         }
+        team.lastSentLocationDate = new Date();
         team.lastSentLocation = team.currentLocation;
-        team.enemyLocation = this.getTeam(team.chasing).lastSentLocation;
+        if(this.getTeam(team.chasing) != null) {
+            team.enemyLocation = this.getTeam(team.chasing).lastSentLocation;
+        }
         return team;
     }
 

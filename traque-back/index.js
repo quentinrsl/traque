@@ -5,6 +5,7 @@ import { config } from "dotenv";
 import { readFileSync } from "fs";
 import { initAdminSocketHandler, secureAdminBroadcast } from "./admin_socket.js";
 import { initTeamSocket, playersBroadcast } from "./team_socket.js";
+import { PenaltyController } from "./penalty_controller.js";
 //extract admin password from .env file
 config();
 const HOST = process.env.HOST;
@@ -41,6 +42,8 @@ function onUpdateZone(zone) {
 
 
 export const game = new Game(onUpdateZone, onUpdateNewZone);
+const penaltyController = new PenaltyController(game);
+penaltyController.init()
 
 
 initAdminSocketHandler();

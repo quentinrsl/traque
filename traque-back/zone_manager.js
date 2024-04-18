@@ -154,6 +154,7 @@ export class ZoneManager {
             this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionInterval)
             this.currentZoneCount++;
         }
+        this.onZoneUpdate(JSON.parse(JSON.stringify(this.currentStartZone)))
         this.onNextZoneUpdate({
             begin: JSON.parse(JSON.stringify(this.currentStartZone)),
             end: JSON.parse(JSON.stringify(this.nextZone))
