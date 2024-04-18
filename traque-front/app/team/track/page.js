@@ -1,7 +1,9 @@
 "use client";
 import ActionDrawer from '@/components/team/actionDrawer';
+import { Notification } from '@/components/team/notification';
 import PlacementOverlay from '@/components/team/placementOverlay';
 import { WaitingScreen } from '@/components/team/waitingScreen';
+import {  useSocket } from '@/context/socketContext';
 import { useTeamConnexion } from '@/context/teamConnexionContext';
 import useGame from '@/hook/useGame';
 import { GameState } from '@/util/gameState';
@@ -19,8 +21,10 @@ const PlacementMap = dynamic(() => import('@/components/team/map').then((mod) =>
 export default function Track() {
     const { gameState, captured} = useGame();
     const { useProtect } = useTeamConnexion();
+    const { teamSocket: socket} = useSocket();
     useProtect();
     return <>
+        <Notification socket={socket}/>
         {gameState == GameState.SETUP && <WaitingScreen />}
         {gameState == GameState.PLAYING && !captured && <div className='h-full'>
             <LiveMap />

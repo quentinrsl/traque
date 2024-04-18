@@ -34,7 +34,7 @@ function LiveZone() {
 function ZoneExtremities() {
     const { zoneExtremities } = useTeamContext();
     console.log('Zone extremities', zoneExtremities);
-    return zoneExtremities && zoneExtremities.begin && zoneExtremities.end && <>
+    return zoneExtremities?.begin && zoneExtremities?.end && <>
         <Circle center={zoneExtremities.begin.center} radius={zoneExtremities.begin.radius} color='black' fill={false} />
         <Circle center={zoneExtremities.end.center} radius={zoneExtremities.end.radius} color='red' fill={false} />
     </>
