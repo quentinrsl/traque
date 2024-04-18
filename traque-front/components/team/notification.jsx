@@ -33,7 +33,7 @@ export function Notification({socket }) {
     }, [visible]);
 
     let bgColorMap = {
-        error: "bg-red-500",
+        error: "bg-red-500 text-white",
         success: "bg-green-500",
         warning: "bg-yellow-500"
     }
