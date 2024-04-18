@@ -137,11 +137,9 @@ export class ZoneManager {
      * Wait for the appropriate duration before starting a new zone reduction if needed
      */
     setNextZone() {
-        console.log("Setting next zone", this.currentZoneCount, this.zoneSettings.reductionCount, this.zoneSettings.reductionInterval)
         //At this point, nextZone == currentZone, we need to update the next zone, the raidus decrement, and start a timer before the next shrink
         //last zone
         if (this.currentZoneCount == this.zoneSettings.reductionCount) {
-            console.log("last zone reached")
             this.nextZone = JSON.parse(JSON.stringify(this.zoneSettings.min))
             this.currentStartZone = JSON.parse(JSON.stringify(this.zoneSettings.min))
         } else if (this.currentZoneCount == this.zoneSettings.reductionCount - 1) {
@@ -150,7 +148,6 @@ export class ZoneManager {
             this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionInterval)
             this.currentZoneCount++;
         } else if (this.currentZoneCount < this.zoneSettings.reductionCount) {
-            console.log("started timer for next zone")
             this.nextZone.center = this.getRandomNextCenter(this.nextZone.radius * this.shrinkFactor)
             this.nextZone.radius *= this.shrinkFactor;
             this.currentStartZone = JSON.parse(JSON.stringify(this.currentZone))
@@ -170,11 +167,8 @@ export class ZoneManager {
      */
     startShrinking() {
         const startTime = new Date();
-        console.log("started shrinking")
         this.updateIntervalId = setInterval(() => {
-            console.log("Shrink tick")
             const completed = ((new Date() - startTime) / (1000 * 60)) / this.zoneSettings.reductionDuration;
-            console.log(completed)
             this.currentZone.radius = map(completed, 0, 1, this.currentStartZone.radius, this.nextZone.radius)
             this.currentZone.center.lat = map(completed,0,1, this.currentStartZone.center.lat, this.nextZone.center.lat)
             this.currentZone.center.lng = map(completed,0,1, this.currentStartZone.center.lng, this.nextZone.center.lng)

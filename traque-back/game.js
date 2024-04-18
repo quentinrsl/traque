@@ -1,5 +1,5 @@
 import { isInCircle } from "./map_utils.js";
-import { ZoneManager } from "./zoneManager.js";
+import { ZoneManager } from "./zone_manager.js";
 
 const GameState = {
     SETUP: "setup",
@@ -10,6 +10,8 @@ const GameState = {
 
 export default class Game {
     constructor(onUpdateZone,onUpdateNewZone) {
+        //Number of penalties needed to be eliminated
+        this.MAX_PENALTIES = 3;
         this.teams = [];
         this.state = GameState.SETUP;
         this.zone = new ZoneManager(onUpdateZone, onUpdateNewZone)
@@ -62,6 +64,7 @@ export default class Game {
             startingArea: null,
             ready: false,
             captured: false,
+            penalties: 0,
         });
         this.updateTeamChasing();
         return true;
@@ -151,14 +154,31 @@ export default class Game {
         return true;
     }
 
-    capture(teamId, captureCode) {
+    /**
+     * Request a capture initiated by the team with id teamId (the one trying to capture)
+     * If the captureCode match, the team chased by teamId will be set to captured
+     * And the chase chain will be updated
+     * @param {Number} teamId The id of the capturing team
+     * @param {Number} captureCode The code sent by the capturing that only the captured team know, used to verify the authenticity of the capture
+     * @returns {Boolean} if the capture has been successfull or not
+     */
+    requestCapture(teamId, captureCode) {
         let enemyTeam = this.getTeam(this.getTeam(teamId).chasing)
         if(enemyTeam.captureCode == captureCode) {
-            enemyTeam.captured = true;
+            this.capture(enemyTeam);
             this.updateTeamChasing();
             return true;
         }
         return false;
+    }
+
+    /**
+     * Set a team to captured and update the chase chain
+     * @param {Number} teamId the Id of the captured team
+     */
+    capture(teamId) {
+        this.getTeam(teamId).captured = true
+        this.updateTeamChasing();
     }
 
     /**
