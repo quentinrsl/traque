@@ -1,4 +1,5 @@
 import { isInCircle } from "./map_utils.js";
+import { sendUpdatedTeamInformations } from "./team_socket.js";
 import { ZoneManager } from "./zone_manager.js";
 
 export const GameState = {
@@ -56,7 +57,7 @@ export default class Game {
             chased: null,
             currentLocation: null,
             lastSentLocation: null,
-            lastSentLocationDate: null,
+            locationSendDeadline: null,
             enemyLocation: null,
             captureCode: this.createCaptureCode(),
             sockets: [],
@@ -140,6 +141,8 @@ export default class Game {
     initLastSentLocations() {
         for(let team of this.teams) {
             team.lastSentLocation = team.currentLocation;
+            team.locationSendDeadline = Number(new Date()) + process.env.ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES * 60 * 1000;
+            sendUpdatedTeamInformations(team.id);
         }
     }
 
@@ -148,7 +151,7 @@ export default class Game {
         if(team == undefined) {
             return false;
         }
-        team.lastSentLocationDate = new Date();
+        team.locationSendDeadline = Number(new Date()) + process.env.ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES * 60 * 1000;
         team.lastSentLocation = team.currentLocation;
         if(this.getTeam(team.chasing) != null) {
             team.enemyLocation = this.getTeam(team.chasing).lastSentLocation;

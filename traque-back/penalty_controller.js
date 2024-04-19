@@ -78,11 +78,11 @@ export class PenaltyController {
         this.game.teams.forEach((team) => {
             //If the team has not sent their location for more than the allowed period, automatically send it and add a penalty
             if (team.captured) { return }
-            if(team.lastSentLocationDate == null) {
-                team.lastSentLocationDate = new Date();
+            if(team.locationSendDeadline == null) {
+                team.locationSendDeadline = Number(new Date()) + process.env.ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES * 60 * 1000;
                 return;
             }
-            if (new Date() - team.lastSentLocationDate > process.env.ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES * 60 * 1000) {
+            if (new Date() > team.locationSendDeadline) {
                 this.addPenalty(team.id);
                 this.game.sendLocation(team.id);
                 sendUpdatedTeamInformations(team.id);
