@@ -68,7 +68,7 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                         <div className='flex flex-row'>
                             <p>Penalties :</p>
                             <button className='w-7 h-7 mx-4 bg-blue-600 hover:bg-blue-500 text-md ease-out duration-200 text-white shadow-sm rounded' onClick={() => handleAddPenalty(-1)}>-</button>
-                            <p> {team.penalties}</p>
+                            <p>{team.penalties}</p>
                             <button className='w-7 h-7 mx-4 bg-blue-600 hover:bg-blue-500 text-md ease-out duration-200 text-white shadow-sm rounded' onClick={() => handleAddPenalty(1)}>+</button>
                         </div>
                     </div>
