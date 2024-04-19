@@ -18,7 +18,7 @@ export class ZoneManager {
             reductionInterval: 1,
             updateIntervalSeconds: 1,
         }
-        this.shrinkFactor = null;
+        this.nextZoneDecrement = null;
         //Live location of the zone
         this.currentZone = { center: null, radius: null };
 
@@ -78,7 +78,7 @@ export class ZoneManager {
     udpateSettings(newSettings) {
         //validate settings
         this.zoneSettings = { ...this.zoneSettings, ...newSettings };
-        this.shrinkFactor = Math.pow(this.zoneSettings.min.radius / this.zoneSettings.max.radius, 1 / this.zoneSettings.reductionCount)
+        this.nextZoneDecrement = (this.zoneSettings.max.radius - this.zoneSettings.min.radius) / this.zoneSettings.reductionCount;
         return true;
     }
 
@@ -148,8 +148,8 @@ export class ZoneManager {
             this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionInterval)
             this.currentZoneCount++;
         } else if (this.currentZoneCount < this.zoneSettings.reductionCount) {
-            this.nextZone.center = this.getRandomNextCenter(this.nextZone.radius * this.shrinkFactor)
-            this.nextZone.radius *= this.shrinkFactor;
+            this.nextZone.center = this.getRandomNextCenter(this.nextZone.radius - this.nextZoneDecrement)
+            this.nextZone.radius -= this.nextZoneDecrement;
             this.currentStartZone = JSON.parse(JSON.stringify(this.currentZone))
             this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionInterval)
             this.currentZoneCount++;

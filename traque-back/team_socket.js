@@ -105,6 +105,7 @@ export function initTeamSocket() {
             }
             game.updateTeamChasing();
             teamBroadcast(teamId, "update_team", { enemyLocation: team.enemyLocation,locationSendDeadline: team.locationSendDeadline  });
+            secureAdminBroadcast("teams", game.teams)
         });
 
         socket.on('capture', (captureCode) => {
