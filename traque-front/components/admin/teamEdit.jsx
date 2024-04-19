@@ -23,12 +23,19 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
 
     function handleRename(e) {
         e.preventDefault();
-        updateTeam(team.id, {name:newTeamName});
+        updateTeam(team.id, { name: newTeamName });
     }
 
     function handleRemove() {
         removeTeam(team.id);
         setSelectedTeamId(null);
+    }
+
+    function handleAddPenalty(increment) {
+        let newPenalties = team.penalties + increment;
+        newPenalties = Math.max(0, newPenalties);
+        newPenalties = Math.min(3, newPenalties);
+        updateTeam(team.id, { penalties: newPenalties });
     }
 
     return (team &&
@@ -45,7 +52,7 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                             <BlueButton type="submit">Rename</BlueButton>
                         </div>
                     </form>
-                    <BlueButton onClick={() => updateTeam(team.id, {captured: !team.captured})}>{team.captured ? "Revive" : "Capture"}</BlueButton>
+                    <BlueButton onClick={() => updateTeam(team.id, { captured: !team.captured })}>{team.captured ? "Revive" : "Capture"}</BlueButton>
                     <RedButton onClick={handleRemove}>Remove</RedButton>
                 </div>
                 <div className='w-1/2 flex flex-col space-y-2 mx-2'>
@@ -57,12 +64,19 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                         <p>Chased by : {getTeamName(team.chased)}</p>
                         <p>Capture code : {String(team.captureCode).padStart(4, '0')}</p>
                         <p>Captured : {team.captured ? "Yes" : "No"}</p>
+                        <p>Has to send location before {new Date(team.locationSendDeadline).toTimeString()}</p>
+                        <div className='flex flex-row'>
+                            <p>Penalties :</p>
+                            <button className='w-7 h-7 mx-4 bg-blue-600 hover:bg-blue-500 text-md ease-out duration-200 text-white shadow-sm rounded' onClick={() => handleAddPenalty(-1)}>-</button>
+                            <p> {team.penalties}</p>
+                            <button className='w-7 h-7 mx-4 bg-blue-600 hover:bg-blue-500 text-md ease-out duration-200 text-white shadow-sm rounded' onClick={() => handleAddPenalty(1)}>+</button>
+                        </div>
                     </div>
                 </div>
             </div>
             <div className='m-5 h-full flex flex-col'>
                 <h2 className='text-2xl text-center'>Starting area</h2>
-                <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => updateTeam(team.id, {startingArea})} />
+                <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => updateTeam(team.id, { startingArea })} />
             </div>
         </div>
     )

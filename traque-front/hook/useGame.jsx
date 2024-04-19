@@ -28,6 +28,8 @@ export default function useGame() {
         name: teamInfos?.name || null,
         ready: teamInfos?.ready || false,
         captured: teamInfos?.captured || false,
+        locationSendDeadline: teamInfos?.locationSendDeadline || null,
+        penalties: teamInfos?.penalties || 0,
         teamId,
         gameState,
     };

@@ -1,5 +1,5 @@
 import useGame from "@/hook/useGame";
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import BlueButton, { GreenButton, RedButton } from "../util/button";
 import TextInput from "../util/textInput";
 import { useTeamConnexion } from "@/context/teamConnexionContext";
@@ -7,8 +7,17 @@ import { useTeamConnexion } from "@/context/teamConnexionContext";
 export default function ActionDrawer() {
     const [visible, setVisible] = useState(false);
     const [enemyCaptureCode, setEnemyCaptureCode] = useState("");
-    const { sendCurrentPosition, name, captureCode, capture } = useGame();
+    const { sendCurrentPosition, name, captureCode, capture, locationSendDeadline, penalties } = useGame();
     const {logout} = useTeamConnexion();   
+    const [timeLeftBeforePenalty, setTimeLeftBeforePenalty] = useState(0);
+    useEffect(() => {
+        const interval = setInterval(() => {
+            console.log(locationSendDeadline)
+            const timeLeft = locationSendDeadline - Date.now();
+            setTimeLeftBeforePenalty(Math.floor(timeLeft / 1000 / 60));
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [locationSendDeadline]);
 
     function handleCapture() {
         capture(enemyCaptureCode);
@@ -28,16 +37,15 @@ export default function ActionDrawer() {
                     </div>
                     <div className='text-gray-700'>
                         <span> Capture code  </span>
-                        <span className='text-lg text-black'>{captureCode}</span>
+                        <span className='text-lg text-black'>{String(captureCode).padStart(4,"0")}</span>
                     </div>
                     <div className='text-gray-700'>
-                        <span className='text-lg text-black'>30min</span>
+                        <span className='text-lg text-black'>{timeLeftBeforePenalty}min</span>
                         <span> before penalty</span>
                     </div>
                     <div className='w-1/2 flex flex-row justify-center mx-auto'>
-                        <div className='min-h-5 m-2 min-w-5 bg-green-400'></div>
-                        <div className='min-h-5 m-2 min-w-5 bg-green-400'></div>
-                        <div className='min-h-5 m-2 min-w-5 bg-green-400'></div>
+                        {Array.from({ length: penalties }).map((_, i) => <div key={i} className='min-h-5 m-2 min-w-5 bg-red-400'></div>)}
+                        {Array.from({ length: 3-penalties }).map((_, i) => <div key={i} className='min-h-5 m-2 min-w-5 bg-green-400'></div>)}
                     </div>
                 </div>
                 <div className="h-20">
