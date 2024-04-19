@@ -2,6 +2,7 @@ import { config } from "dotenv";
 import { getDistanceFromLatLon, isInCircle } from "./map_utils.js";
 import { sendUpdatedTeamInformations, teamBroadcast } from "./team_socket.js";
 import { GameState } from "./game.js";
+import { secureAdminBroadcast } from "./admin_socket.js";
 config()
 
 export class PenaltyController {
@@ -32,6 +33,9 @@ export class PenaltyController {
      */
     addPenalty(teamId) {
         let team = this.game.getTeam(teamId);
+        if(!team) {
+            return;
+        }
         if (team.captured) {
             return;
         }
@@ -46,6 +50,7 @@ export class PenaltyController {
             teamBroadcast(teamId, "warning", `You recieved a penalty (${team.penalties}/${process.env.MAX_PENALTIES})`)
             sendUpdatedTeamInformations(teamId);
         }
+        secureAdminBroadcast("teams", this.game.teams)
     }
 
     watchZone() {
@@ -86,6 +91,7 @@ export class PenaltyController {
                 this.addPenalty(team.id);
                 this.game.sendLocation(team.id);
                 sendUpdatedTeamInformations(team.id);
+                secureAdminBroadcast("teams", this.game.teams)
             }
         })
     }

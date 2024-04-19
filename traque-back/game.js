@@ -10,26 +10,26 @@ export const GameState = {
 }
 
 export default class Game {
-    constructor(onUpdateZone,onUpdateNewZone) {
+    constructor(onUpdateZone, onUpdateNewZone) {
         this.teams = [];
         this.state = GameState.SETUP;
         this.zone = new ZoneManager(onUpdateZone, onUpdateNewZone)
     }
 
     setState(newState) {
-        if(Object.values(GameState).indexOf(newState) == -1) {
+        if (Object.values(GameState).indexOf(newState) == -1) {
             return false;
         }
         //The game has started
-        if(newState == GameState.PLAYING) {
-            if(!this.zone.ready()) {
+        if (newState == GameState.PLAYING) {
+            if (!this.zone.ready()) {
                 return false;
             }
             this.initLastSentLocations();
             this.zone.reset()
             this.zone.start()
         }
-        if(newState != GameState.PLAYING) {
+        if (newState != GameState.PLAYING) {
             this.zone.reset();
         }
         this.state = newState;
@@ -38,7 +38,7 @@ export default class Game {
 
     getNewTeamId() {
         let id = null;
-        while(id === null || this.teams.find(t => t.id === id)) {
+        while (id === null || this.teams.find(t => t.id === id)) {
             id = Math.floor(Math.random() * 1_000_000);
         }
         return id;
@@ -73,7 +73,7 @@ export default class Game {
     playingTeamCount() {
         let res = 0;
         this.teams.forEach((t) => {
-            if(!t.captured) {
+            if (!t.captured) {
                 res++;
             }
         })
@@ -81,24 +81,24 @@ export default class Game {
     }
 
     updateTeamChasing() {
-        if(this.playingTeamCount() <= 1) {
+        if (this.playingTeamCount() <= 1) {
             return false;
         }
         let firstTeam = null;
         let previousTeam = null
-        for(let i = 0; i < this.teams.length; i++ ) {
-            if(!this.teams[i].captured) {
-                if(previousTeam != null) {
+        for (let i = 0; i < this.teams.length; i++) {
+            if (!this.teams[i].captured) {
+                if (previousTeam != null) {
                     this.teams[i].chased = previousTeam;
                     this.getTeam(previousTeam).chasing = this.teams[i].id;
-                }else {
+                } else {
                     firstTeam = this.teams[i].id;
                 }
                 previousTeam = this.teams[i].id
             }
         }
         this.getTeam(firstTeam).chased = previousTeam;
-        this.getTeam(previousTeam).chasing =firstTeam;
+        this.getTeam(previousTeam).chasing = firstTeam;
         return true;
     }
 
@@ -113,25 +113,25 @@ export default class Game {
 
     updateTeam(teamId, newTeam) {
         this.teams = this.teams.map((t) => {
-            if(t.id == teamId) {
-                return {...t, ...newTeam}
-            }else {
+            if (t.id == teamId) {
+                return { ...t, ...newTeam }
+            } else {
                 return t;
             }
         })
         this.updateTeamChasing();
         return true;
     }
-    
+
     updateLocation(teamId, location) {
         let team = this.getTeam(teamId);
-        if(team == undefined) {
+        if (team == undefined) {
             return false;
         }
         team.currentLocation = location;
         //Update the team ready status if they are in their starting area
-        if(this.state == GameState.PLACEMENT && team.startingArea && team.startingArea && location) {
-            team.ready = isInCircle(location, [team.startingArea.center.lat, team.startingArea.center.lng], team.startingArea.radius)
+        if (this.state == GameState.PLACEMENT && team.startingArea && team.startingArea && location) {
+            team.ready = isInCircle({ lat: location[0], lng: location[1] }, team.startingArea.center, team.startingArea.radius)
         }
         return true;
     }
@@ -139,7 +139,7 @@ export default class Game {
     //Make it so that when a team requests the location of a team that has never sent their locaiton
     //Their position at the begining of the game is sent
     initLastSentLocations() {
-        for(let team of this.teams) {
+        for (let team of this.teams) {
             team.lastSentLocation = team.currentLocation;
             team.locationSendDeadline = Number(new Date()) + process.env.ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES * 60 * 1000;
             sendUpdatedTeamInformations(team.id);
@@ -148,19 +148,19 @@ export default class Game {
 
     sendLocation(teamId) {
         let team = this.getTeam(teamId);
-        if(team == undefined) {
+        if (team == undefined) {
             return false;
         }
         team.locationSendDeadline = Number(new Date()) + process.env.ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES * 60 * 1000;
         team.lastSentLocation = team.currentLocation;
-        if(this.getTeam(team.chasing) != null) {
+        if (this.getTeam(team.chasing) != null) {
             team.enemyLocation = this.getTeam(team.chasing).lastSentLocation;
         }
         return team;
     }
 
     removeTeam(teamId) {
-        if(this.getTeam(teamId) == undefined) {
+        if (this.getTeam(teamId) == undefined) {
             return false;
         }
         //remove the team from the list
@@ -179,7 +179,7 @@ export default class Game {
      */
     requestCapture(teamId, captureCode) {
         let enemyTeam = this.getTeam(this.getTeam(teamId).chasing)
-        if(enemyTeam.captureCode == captureCode) {
+        if (enemyTeam.captureCode == captureCode) {
             this.capture(enemyTeam);
             this.updateTeamChasing();
             return true;
@@ -204,7 +204,7 @@ export default class Game {
      */
     setZoneSettings(newSettings) {
         //cannot change zones while playing
-        if(this.state == GameState.PLAYING || this.state == GameState.FINISHED) {
+        if (this.state == GameState.PLAYING || this.state == GameState.FINISHED) {
             return false;
         }
         return this.zone.udpateSettings(newSettings)
