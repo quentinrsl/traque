@@ -2,7 +2,7 @@
 import { useLocation } from "@/hook/useLocation";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
-import { Circle, MapContainer, TileLayer, useMap } from "react-leaflet";
+import { Circle, MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import { useMapCircleDraw } from "@/hook/mapDrawing";
 
 function MapPan(props) {
@@ -36,7 +36,7 @@ function MapEventListener({ onClick, onMouseMove }) {
 }
 
 const DEFAULT_ZOOM = 17;
-export function CircularAreaPicker({ area, setArea, ...props }) {
+export function CircularAreaPicker({ area, setArea, markerPosition, ...props }) {
     const location = useLocation(Infinity);
     const { handleClick, handleMouseMove, center, radius } = useMapCircleDraw(area, setArea);
     return (
@@ -46,6 +46,13 @@ export function CircularAreaPicker({ area, setArea, ...props }) {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             {center && radius && <Circle center={center} radius={radius} fillColor="blue" />}
+            {markerPosition && <Marker position={markerPosition} icon={new L.Icon({
+                iconUrl: '/icons/location.png',
+                iconSize: [41, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            })}></Marker>}
             <MapPan center={location} zoom={DEFAULT_ZOOM} />
             <MapEventListener onClick={handleClick} onMouseMove={handleMouseMove} />
         </MapContainer>)

@@ -76,7 +76,7 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
             </div>
             <div className='m-5 h-full flex flex-col'>
                 <h2 className='text-2xl text-center'>Starting area</h2>
-                <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => updateTeam(team.id, { startingArea })} />
+                <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => updateTeam(team.id, { startingArea })} markerPosition={team?.currentLocation}/>
             </div>
         </div>
     )
