@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 });
 
 function clean() {
-    
+
     const files = fs.readdirSync(UPLOAD_DIR);
 
     for (const file of files) {
@@ -31,7 +31,7 @@ function clean() {
 const upload = multer({
     storage,
     fileFilter: function (req, file, callback) {
-        if ( ALLOWED_MIME.indexOf(file.mimetype) == -1) {
+        if (ALLOWED_MIME.indexOf(file.mimetype) == -1) {
             callback(null, false);
         } else if (!game.getTeam(Number(req.query.team))) {
             callback(null, false);
@@ -45,25 +45,28 @@ const upload = multer({
 export function initPhotoUpload() {
     clean();
     app.post("/upload", upload.single('file'), (req, res) => {
+        res.set("Access-Control-Allow-Origin", "*");
         console.log("upload", req.query)
         res.send("")
     })
-    app.get("/photo/my", (req,res) => {
+    app.get("/photo/my", (req, res) => {
         let team = game.getTeam(Number(req.query.team));
-        if(team) {
-            res.set("Content-Type","image/png")
+        if (team) {
+            res.set("Content-Type", "image/png")
+            res.set("Access-Control-Allow-Origin", "*");
             res.sendFile(process.cwd() + "/" + UPLOAD_DIR + "/" + team.id);
-        }else {
-            res.send(400,"Team not found")
+        } else {
+            res.send(400, "Team not found")
         }
     })
-    app.get("/photo/enemy", (req,res) => {
+    app.get("/photo/enemy", (req, res) => {
         let team = game.getTeam(Number(req.query.team));
-        if(team) {
-            res.set("Content-Type","image/png")
+        if (team) {
+            res.set("Content-Type", "image/png")
+            res.set("Access-Control-Allow-Origin", "*");
             res.sendFile(process.cwd() + "/" + UPLOAD_DIR + "/" + team.chasing);
-        }else {
-            res.send(400,"Team not found")
+        } else {
+            res.send(400, "Team not found")
         }
     })
 }
