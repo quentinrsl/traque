@@ -42,7 +42,7 @@ export function sendUpdatedTeamInformations(teamId) {
             enemyLocation: team.enemyLocation,
             currentLocation: team.currentLocation,
             lastSentLocation: team.lastSentLocation,
-            lastSentLocationDate: team.lastSentLocationDate,
+            locationSendDeadline: team.locationSendDeadline,
             captureCode: team.captureCode,
             startingArea: team.startingArea,
             ready: team.ready,
@@ -104,7 +104,7 @@ export function initTeamSocket() {
                 return;
             }
             game.updateTeamChasing();
-            teamBroadcast(teamId, "update_team", { enemyLocation: team.enemyLocation });
+            teamBroadcast(teamId, "update_team", { enemyLocation: team.enemyLocation,locationSendDeadline: team.locationSendDeadline  });
         });
 
         socket.on('capture', (captureCode) => {
