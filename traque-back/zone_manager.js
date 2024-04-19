@@ -108,7 +108,8 @@ export class ZoneManager {
         this.nextZone = JSON.parse(JSON.stringify(this.zoneSettings.max));
         this.currentStartZone = JSON.parse(JSON.stringify(this.zoneSettings.max));
         this.currentZone = JSON.parse(JSON.stringify(this.zoneSettings.max));
-        this.setNextZone();
+        return this.setNextZone();
+
     }
 
     /**
@@ -121,10 +122,15 @@ export class ZoneManager {
     getRandomNextCenter(newRadius) {
         let ok = false;
         let res = null
+        let tries = 0;
+        const MAX_TRIES = 1000
         //take a random point satisfying both conditions
-        while (!ok) {
+        while (tries++<MAX_TRIES) {
             res = randomCirclePoint({ latitude: this.currentZone.center.lat, longitude: this.currentZone.center.lng }, this.currentZone.radius - newRadius);
             ok = (isInCircle({ lat: res.latitude, lng: res.longitude }, this.zoneSettings.min.center, newRadius - this.zoneSettings.min.radius))
+        }
+        if(tries>=MAX_TRIES) {
+            return false;
         }
         return {
             lat: res.latitude,
