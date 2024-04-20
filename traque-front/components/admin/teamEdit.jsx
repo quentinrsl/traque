@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import TextInput from '../util/textInput'
 import BlueButton, { RedButton } from '../util/button';
 import useAdmin from '@/hook/useAdmin';
@@ -9,9 +9,11 @@ const CircularAreaPicker = dynamic(() => import('./mapPicker').then((mod) => mod
 });
 
 export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
+    const teamImage = useRef(null);
     const [newTeamName, setNewTeamName] = React.useState('');
     const { updateTeam, getTeamName, removeTeam, getTeam, teams } = useAdmin();
     const [team, setTeam] = useState({})
+    const SERVER_URL = "https://" + process.env.NEXT_PUBLIC_SOCKET_HOST + ":" + process.env.NEXT_PUBLIC_SOCKET_PORT;
 
     useEffect(() => {
         let team = getTeam(selectedTeamId);
@@ -19,6 +21,7 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
             setNewTeamName(team.name);
             setTeam(team);
         }
+        teamImage.current.src = SERVER_URL + "/photo/my?team=" + selectedTeamId + "&t=" + new Date().getTime();
     }, [selectedTeamId, teams])
 
     function handleRename(e) {
@@ -74,9 +77,19 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                     </div>
                 </div>
             </div>
-            <div className='m-5 h-full flex flex-col'>
-                <h2 className='text-2xl text-center'>Starting area</h2>
-                <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => updateTeam(team.id, { startingArea })} markerPosition={team?.currentLocation}/>
+            <div className='flex flex-row h-full w-full'>
+                <div className='w-1/2 h-full p-5 flex flex-col'>
+                    <h2 className='text-2xl text-center'>Starting area</h2>
+                    <div className='h-full p-5'>
+                        <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => updateTeam(team.id, { startingArea })} markerPosition={team?.currentLocation} />
+                    </div>
+                </div>
+                <div className='w-1/2 h-full p-5 flex flex-col'>
+                    <h2 className='text-2xl text-center'>Team photo</h2>
+                    <div className='h-full p-5'>
+                    <img ref={teamImage} className='w-full h-full object-contain' />
+                    </div>
+                </div>
             </div>
         </div>
     )
