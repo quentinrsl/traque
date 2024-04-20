@@ -23,7 +23,7 @@ export default function AdminPage() {
                 <BlueButton onClick={() => changeState(GameState.PLAYING)}>Start game</BlueButton>
             </div>
             {gameState == GameState.PLACEMENT && <div className="max-h-5/6"><TeamReady /></div>}
-            {gameState == GameState.SETUP && <ZoneSelector />}
+            {(gameState == GameState.SETUP || gameState == GameState.PLACEMENT) && <ZoneSelector />}
         </div>
     )
 }

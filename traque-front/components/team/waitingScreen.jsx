@@ -1,12 +1,10 @@
-import { useTeamConnexion } from "@/context/teamConnexionContext";
 import useGame from "@/hook/useGame"
-import { GreenButton } from "../util/button";
+import { GreenButton, LogoutButton } from "../util/button";
 import { useRef } from "react";
 
 export function WaitingScreen() {
     const { name, teamId } = useGame();
     const imageRef = useRef(null);
-    const { logout } = useTeamConnexion();
     const SERVER_URL = "https://" + process.env.NEXT_PUBLIC_SOCKET_HOST + ":" + process.env.NEXT_PUBLIC_SOCKET_PORT;
 
     function sendImage() {
@@ -23,13 +21,13 @@ export function WaitingScreen() {
     }
 
     function refreshImage() {
-        imageRef.current.src = "";
         imageRef.current.src = SERVER_URL + "/photo/my?team=" + teamId.toString() + "&t=" + new Date().getTime();
     }
 
 
     return (
         <div className='h-full flex flex-col items-center justify-center'>
+            <LogoutButton />
             <div className='text-4xl mt-10 text-center'>
                 Equipe : {name}
             </div>
@@ -44,7 +42,6 @@ export function WaitingScreen() {
                 </div>
             </div>
             {teamId && <img ref={imageRef} src={SERVER_URL + "/photo/my?team=" + teamId.toString()} className='w-screen h-1/2 object-contain' />}
-            <img src="/icons/logout.png" onClick={logout} className='w-12 h-12 bg-red-500 p-2 top-1 right-1 rounded-lg cursor-pointer bg-red fixed z-20' />
         </div>
     )
 }

@@ -3,7 +3,8 @@ import ActionDrawer from '@/components/team/actionDrawer';
 import { Notification } from '@/components/team/notification';
 import PlacementOverlay from '@/components/team/placementOverlay';
 import { WaitingScreen } from '@/components/team/waitingScreen';
-import {  useSocket } from '@/context/socketContext';
+import { LogoutButton } from '@/components/util/button';
+import { useSocket } from '@/context/socketContext';
 import { useTeamConnexion } from '@/context/teamConnexionContext';
 import useGame from '@/hook/useGame';
 import { GameState } from '@/util/gameState';
@@ -19,12 +20,12 @@ const PlacementMap = dynamic(() => import('@/components/team/map').then((mod) =>
 });
 
 export default function Track() {
-    const { gameState, captured} = useGame();
+    const { gameState, captured } = useGame();
     const { useProtect } = useTeamConnexion();
-    const { teamSocket: socket} = useSocket();
+    const { teamSocket: socket } = useSocket();
     useProtect();
     return <>
-        <Notification socket={socket}/>
+        <Notification socket={socket} />
         {gameState == GameState.SETUP && <WaitingScreen />}
         {gameState == GameState.PLAYING && !captured && <div className='h-full'>
             <LiveMap />
@@ -32,7 +33,7 @@ export default function Track() {
         </div>
         }
         {gameState == GameState.PLAYING && captured && <div className='h-full'>
-            <div className='text-center text-2xl'>Vous avez été capturé</div> 
+            <div className='text-center text-2xl'>Vous avez été capturé</div>
             <div className='text-center text-md'>Instructions de retour ici</div>
         </div>}
         {gameState == GameState.PLACEMENT &&
@@ -40,6 +41,13 @@ export default function Track() {
                 <PlacementOverlay />
                 <PlacementMap />
             </div>
+        }
+        {gameState == GameState.FINISHED && <div className='h-full'>
+            <LogoutButton />
+            <div className='text-center text-2xl'>Partie terminée</div>
+            {captured && <div className='text-center text-md'>Vous avez perdu</div>}
+            {!captured && <div className='text-center text-md'>Vous avez gagné</div>}
+        </div>
         }
     </>
 }

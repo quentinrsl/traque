@@ -56,6 +56,6 @@ export function ZoneSelector() {
             <p>Interval between reductions</p>
             <TextInput value={reductionInterval} onChange={(e) => setReductionInterval(e.target.value)}></TextInput>
         </div>
-        <GreenButton onClick={handleSettingsSubmit}>Save</GreenButton>
+        <GreenButton onClick={handleSettingsSubmit}>Apply</GreenButton>
     </div>
 }

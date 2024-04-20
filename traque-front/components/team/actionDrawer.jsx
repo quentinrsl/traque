@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import BlueButton, { GreenButton, RedButton } from "../util/button";
 import TextInput from "../util/textInput";
 import { useTeamConnexion } from "@/context/teamConnexionContext";
+import { EnemyTeamModal } from "./enemyTeamModal";
 
 export default function ActionDrawer() {
     const [visible, setVisible] = useState(false);
@@ -10,6 +11,8 @@ export default function ActionDrawer() {
     const { sendCurrentPosition, name, captureCode, capture, locationSendDeadline, penalties } = useGame();
     const {logout} = useTeamConnexion();   
     const [timeLeftBeforePenalty, setTimeLeftBeforePenalty] = useState(0);
+    const [enemyModalVisible, setEnemyModalVisible] = useState(false);
+
     useEffect(() => {
         const interval = setInterval(() => {
             console.log(locationSendDeadline)
@@ -54,7 +57,7 @@ export default function ActionDrawer() {
                 <div className="p-5 shadow-lg bg-white">
                     <div className="text-center text-2xl">Target</div>
                     <div className="h-20 my-1">
-                        <GreenButton onClick={sendCurrentPosition}>See target info</GreenButton>
+                        <GreenButton onClick={() => setEnemyModalVisible(true)}>See target info</GreenButton>
                     </div>
                     <div className="h-20 flex flex-row">
                         <TextInput inputMode="numeric" placeholder="Enemy code" value={enemyCaptureCode} onChange={(e) => setEnemyCaptureCode(e.target.value)} />
@@ -66,6 +69,7 @@ export default function ActionDrawer() {
                 </div>
             </div>
             }
+        <EnemyTeamModal visible={enemyModalVisible} onClose={() => setEnemyModalVisible(false)} />
         </div>
     )
 }
