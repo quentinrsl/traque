@@ -130,6 +130,7 @@ export function initAdminSocketHandler() {
             if (game.updateTeam(teamId, newTeam)) {
                 secureAdminBroadcast("teams", game.teams);
                 sendUpdatedTeamInformations(teamId)
+                sendUpdatedTeamInformations(game.getTeam(teamId).chased)
             }
         })
 

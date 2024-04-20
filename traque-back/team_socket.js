@@ -40,6 +40,7 @@ export function sendUpdatedTeamInformations(teamId) {
         io.of("player").to(socketId).emit("update_team", {
             name: team.name,
             enemyLocation: team.enemyLocation,
+            enemyName: team.enemyName,
             currentLocation: team.currentLocation,
             lastSentLocation: team.lastSentLocation,
             locationSendDeadline: team.locationSendDeadline,
