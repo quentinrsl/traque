@@ -37,7 +37,7 @@ export function ZoneSelector() {
 
     }, [minZone, maxZone]);
 
-    return <div className='w-2/5 h-full gap-1 bg-gray-200 p-10 flex flex-col text-center shadow-2xl overflow-y-scroll'>
+    return <div className='w-2/5 h-full gap-1 bg-white p-10 flex flex-col text-center shadow-2xl overflow-y-scroll'>
         <h2 className="text-2xl">Edit zones</h2>
         {editMode == EditMode.MIN && <RedButton onClick={() => setEditMode(EditMode.MAX)}>Edit end zone</RedButton>}
         {editMode == EditMode.MAX && <BlueButton onClick={() => setEditMode(EditMode.MIN)}>Edit start zone</BlueButton>}

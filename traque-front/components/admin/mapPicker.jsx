@@ -2,8 +2,9 @@
 import { useLocation } from "@/hook/useLocation";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
-import { Circle, MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
+import { Circle, MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { useMapCircleDraw } from "@/hook/mapDrawing";
+import useAdmin from "@/hook/useAdmin";
 
 function MapPan(props) {
     const map = useMap();
@@ -89,6 +90,36 @@ export function ZonePicker({ minZone, setMinZone, maxZone, setMaxZone, editMode,
             {maxCenter && maxRadius && <Circle center={maxCenter} radius={maxRadius} color="red" fillColor="red" />}
             <MapPan center={location} zoom={DEFAULT_ZOOM} />
             <MapEventListener onClick={handleClick} onMouseMove={handleMouseMove} />
+        </MapContainer>
+    )
+}
+
+export function LiveMap() {
+    const location = useLocation(Infinity);
+    const { zone, zoneExtremities, teams, getTeamName } = useAdmin();
+    return (
+        <MapContainer className='min-h-full w-full ' center={location} zoom={DEFAULT_ZOOM} scrollWheelZoom={true}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <MapPan center={location} zoom={DEFAULT_ZOOM} />
+            {zone && <Circle center={zone.center} radius={zone.radius} color="blue" />}
+            {zoneExtremities && <Circle center={zoneExtremities.begin.center} radius={zoneExtremities.begin.radius} color='black' fill={false} />}
+            {zoneExtremities && <Circle center={zoneExtremities.end.center} radius={zoneExtremities.end.radius} color='red' fill={false} />}
+            {teams.map((team) => team.currentLocation && !team.captured && <Marker key={team.id} position={team.currentLocation} icon={new L.Icon({
+                iconUrl: '/icons/location.png',
+                iconSize: [41, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            })}>
+                <Popup>
+                    <strong className="text-lg">{team.name}</strong>
+                    <p className="text-md">Chasing : {getTeamName(team.chasing)}</p>
+                    <p className="text-md">Chased by : {getTeamName(team.chased)}</p>
+                </Popup>
+            </Marker>)}
         </MapContainer>
     )
 }

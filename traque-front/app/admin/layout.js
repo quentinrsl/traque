@@ -7,13 +7,11 @@ export default function AdminLayout({ children}) {
         <AdminConnexionProvider>
             <AdminProvider>
                 <div className='h-full flex flex-col'>
-                    <div className="text-lg max-h-10 p-5 bg-gray-800 text-white  flex items-center justify-left">
-                        <div className="mx-5">Admin</div>
-                        <ul className='flex space-x-4'>
-                            <li><Link href="/admin">Home</Link></li>
-                            <li><Link href="/admin/teams">Teams</Link></li>
-                            <li><Link href="/admin/map">Map</Link></li>
-                        </ul>
+                    <div className="text-xl max-h-15 bg-gray-800 text-white  flex items-center justify-left">
+                        <ul className='flex' >
+                            <li className="p-5 bg-gray-800 hover:bg-gray-600 transition-all cursor-pointer h-full"><Link href="/admin">Admin</Link></li>
+                            <li className="p-5 bg-gray-800 hover:bg-gray-600 transition-all cursor-pointer h-full"><Link href="/admin/teams">Teams</Link></li>
+                        </ul> 
                     </div>
                     <div className="h-full overflow-y-scroll">
                         {children}
