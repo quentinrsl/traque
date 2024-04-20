@@ -1,5 +1,7 @@
+import { secureAdminBroadcast } from "./admin_socket.js";
+import { penaltyController } from "./index.js";
 import { isInCircle } from "./map_utils.js";
-import { sendUpdatedTeamInformations } from "./team_socket.js";
+import { playersBroadcast, sendUpdatedTeamInformations } from "./team_socket.js";
 import { ZoneManager } from "./zone_manager.js";
 
 export const GameState = {
@@ -35,6 +37,15 @@ export default class Game {
         }
         if (newState != GameState.PLAYING) {
             this.zone.reset();
+            penaltyController.stop();
+        }
+        //Game reset
+        if(newState == GameState.SETUP) {
+            for(let team of this.teams) {
+                team.penalties = 0;
+                team.captured = false;
+            }
+            this.updateTeamChasing();
         }
         this.state = newState;
         return true;
@@ -86,7 +97,10 @@ export default class Game {
     }
 
     updateTeamChasing() {
-        if (this.playingTeamCount() <= 1) {
+        if (this.playingTeamCount() <= 2) {
+            if(this.state == GameState.PLAYING) {
+                this.finishGame()
+            }
             return false;
         }
         let firstTeam = null;
@@ -106,6 +120,7 @@ export default class Game {
         this.getTeam(firstTeam).chased = previousTeam;
         this.getTeam(previousTeam).chasing = firstTeam;
         this.getTeam(previousTeam).enemyName = this.getTeam(firstTeam).name;
+        secureAdminBroadcast("teams", this.teams)
         return true;
     }
 
@@ -187,7 +202,7 @@ export default class Game {
     requestCapture(teamId, captureCode) {
         let enemyTeam = this.getTeam(this.getTeam(teamId).chasing)
         if (enemyTeam && enemyTeam.captureCode == captureCode) {
-            this.capture(enemyTeam);
+            this.capture(enemyTeam.id);
             this.updateTeamChasing();
             return true;
         }
@@ -215,5 +230,11 @@ export default class Game {
             return false;
         }
         return this.zone.udpateSettings(newSettings)
+    }
+
+    finishGame() {
+        this.setState(GameState.FINISHED);
+        this.zone.reset();
+        playersBroadcast("game_state", this.state);
     }
 }

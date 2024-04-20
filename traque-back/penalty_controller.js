@@ -3,10 +3,11 @@ import { getDistanceFromLatLon, isInCircle } from "./map_utils.js";
 import { sendUpdatedTeamInformations, teamBroadcast } from "./team_socket.js";
 import { GameState } from "./game.js";
 import { secureAdminBroadcast } from "./admin_socket.js";
+import { game } from "./index.js";
 config()
 
 export class PenaltyController {
-    constructor(game) {
+    constructor() {
         //Number of penalties needed to be eliminated
         this.game = game;
         this.outOfBoundsSince = {};
@@ -27,6 +28,13 @@ export class PenaltyController {
         }, 100);
     }
 
+    stop(){
+        this.outOfBoundsSince = {};
+        if(this.checkIntervalId) {
+            clearInterval(this.checkIntervalId)
+            this.checkIntervalId = null;
+        }
+    }
     /**
      * Increment the penalty score of a team, send a message to the team and eliminated if necessary
      * @param {Number} teamId The team that will recieve a penalty
