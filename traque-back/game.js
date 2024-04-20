@@ -63,6 +63,7 @@ export default class Game {
             lastSentLocation: null,
             locationSendDeadline: null,
             enemyLocation: null,
+            enemyName: null,
             captureCode: this.createCaptureCode(),
             sockets: [],
             startingArea: null,
@@ -95,6 +96,7 @@ export default class Game {
                 if (previousTeam != null) {
                     this.teams[i].chased = previousTeam;
                     this.getTeam(previousTeam).chasing = this.teams[i].id;
+                    this.getTeam(previousTeam).enemyName = this.teams[i].name;
                 } else {
                     firstTeam = this.teams[i].id;
                 }
@@ -103,6 +105,7 @@ export default class Game {
         }
         this.getTeam(firstTeam).chased = previousTeam;
         this.getTeam(previousTeam).chasing = firstTeam;
+        this.getTeam(previousTeam).enemyName = this.getTeam(firstTeam).name;
         return true;
     }
 
@@ -183,7 +186,7 @@ export default class Game {
      */
     requestCapture(teamId, captureCode) {
         let enemyTeam = this.getTeam(this.getTeam(teamId).chasing)
-        if (enemyTeam.captureCode == captureCode) {
+        if (enemyTeam && enemyTeam.captureCode == captureCode) {
             this.capture(enemyTeam);
             this.updateTeamChasing();
             return true;

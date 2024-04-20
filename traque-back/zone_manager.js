@@ -1,5 +1,5 @@
-import randomLocation, { randomCirclePoint } from 'random-location'
-import { getDistanceFromLatLon, isInCircle } from './map_utils.js';
+import { randomCirclePoint } from 'random-location'
+import { isInCircle } from './map_utils.js';
 import { map } from './util.js';
 
 export class ZoneManager {
@@ -123,9 +123,9 @@ export class ZoneManager {
         let ok = false;
         let res = null
         let tries = 0;
-        const MAX_TRIES = 1000
+        const MAX_TRIES = 100000
         //take a random point satisfying both conditions
-        while (tries++<MAX_TRIES) {
+        while (tries++ < MAX_TRIES && !ok) {
             res = randomCirclePoint({ latitude: this.currentZone.center.lat, longitude: this.currentZone.center.lng }, this.currentZone.radius - newRadius);
             ok = (isInCircle({ lat: res.latitude, lng: res.longitude }, this.zoneSettings.min.center, newRadius - this.zoneSettings.min.radius))
         }
@@ -155,6 +155,11 @@ export class ZoneManager {
             this.currentZoneCount++;
         } else if (this.currentZoneCount < this.zoneSettings.reductionCount) {
             this.nextZone.center = this.getRandomNextCenter(this.nextZone.radius - this.nextZoneDecrement)
+            //Next center cannot be found
+            if(this.nextZone.center === false) {
+                console.log("no center")
+                return false;
+            }
             this.nextZone.radius -= this.nextZoneDecrement;
             this.currentStartZone = JSON.parse(JSON.stringify(this.currentZone))
             this.nextZoneTimeoutId = setTimeout(() => this.startShrinking(), 1000 * 60 * this.zoneSettings.reductionInterval)
@@ -165,6 +170,7 @@ export class ZoneManager {
             begin: JSON.parse(JSON.stringify(this.currentStartZone)),
             end: JSON.parse(JSON.stringify(this.nextZone))
         })
+        return true;
     }
 
     /*
