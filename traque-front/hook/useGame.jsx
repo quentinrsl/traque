@@ -22,6 +22,7 @@ export default function useGame() {
         sendCurrentPosition,
         capture,
         enemyPosition: teamInfos?.enemyLocation || null,
+        enemyName: teamInfos?.enemyName || null,
         currentPosition: teamInfos?.currentLocation || null,
         startingArea: teamInfos?.startingArea || null,
         captureCode: teamInfos?.captureCode || null,

@@ -23,7 +23,6 @@ export function WaitingScreen() {
     }
 
     function refreshImage() {
-        imageRef.current.src = "";
         imageRef.current.src = SERVER_URL + "/photo/my?team=" + teamId.toString() + "&t=" + new Date().getTime();
     }
 
