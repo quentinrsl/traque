@@ -48,7 +48,7 @@ function onUpdateZone(zone) {
 
 
 export const game = new Game(onUpdateZone, onUpdateNewZone);
-const penaltyController = new PenaltyController(game);
+export const penaltyController = new PenaltyController();
 penaltyController.init()
 
 
