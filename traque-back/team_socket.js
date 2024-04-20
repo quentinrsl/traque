@@ -75,6 +75,11 @@ export function initTeamSocket() {
             sendUpdatedTeamInformations(loginTeamId);
             socket.emit("login_response", true);
             socket.emit("game_state", game.state)
+            socket.emit("zone", game.zone.currentZone)
+            socket.emit("new_zone", {
+                begin: game.zone.currentStartZone,
+                end: game.zone.nextZone
+            })
         });
 
         socket.on("logout", () => {

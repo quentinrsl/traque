@@ -1,3 +1,4 @@
+import { secureAdminBroadcast } from "./admin_socket.js";
 import { penaltyController } from "./index.js";
 import { isInCircle } from "./map_utils.js";
 import { playersBroadcast, sendUpdatedTeamInformations } from "./team_socket.js";
@@ -37,6 +38,14 @@ export default class Game {
         if (newState != GameState.PLAYING) {
             this.zone.reset();
             penaltyController.stop();
+        }
+        //Game reset
+        if(newState == GameState.SETUP) {
+            for(let team of this.teams) {
+                team.penalties = 0;
+                team.captured = false;
+            }
+            this.updateTeamChasing();
         }
         this.state = newState;
         return true;
@@ -111,6 +120,7 @@ export default class Game {
         this.getTeam(firstTeam).chased = previousTeam;
         this.getTeam(previousTeam).chasing = firstTeam;
         this.getTeam(previousTeam).enemyName = this.getTeam(firstTeam).name;
+        secureAdminBroadcast("teams", this.teams)
         return true;
     }
 

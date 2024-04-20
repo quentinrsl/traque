@@ -46,6 +46,11 @@ export function initAdminSocketHandler() {
                 socket.emit("game_state", game.state)
                 //Other settings that need initialization
                 socket.emit("zone_settings", game.zone.zoneSettings)
+                socket.emit("zone", game.zone.currentZone)
+                socket.emit("new_zone", {
+                    begin: game.zone.currentStartZone,
+                    end: game.zone.nextZone
+                })
 
             } else {
                 //Attempt unsuccessful
