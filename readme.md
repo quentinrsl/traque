@@ -26,6 +26,7 @@ ALLOWED_TIME_OUT_OF_ZONE_IN_MINUTES is the time a user can be out of the zone be
 ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES is the maximum amount of time a user can wait before updating their position, after this period they will recieve a pennalty.
 
 Note : make sure PORT and NEXT_PUBLIC_SOCKET_PORT are the same
+Note 2 : you need to get a trusted certificate for this to work, you can use letsencrypt for that
 
 ### Running the project
 #### Front end

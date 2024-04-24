@@ -21,5 +21,5 @@ export function GreenButton({ children, ...props }) {
 
 export function LogoutButton() {
  const { logout } = useTeamConnexion();
- return <Image src="/icons/logout.png" onClick={logout} className='w-12 h-12 bg-red-500 p-2 top-1 right-1 rounded-lg cursor-pointer bg-red fixed z-20' />
+ return <img src="/icons/logout.png" onClick={logout} className='w-12 h-12 bg-red-500 p-2 top-1 right-1 rounded-lg cursor-pointer bg-red fixed z-20' />
 }

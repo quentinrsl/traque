@@ -42,7 +42,7 @@ export function WaitingScreen() {
                 <GreenButton onClick={sendImage}>Envoyer</GreenButton>
                 </div>
             </div>
-            {teamId && <Image ref={imageRef} src={SERVER_URL + "/photo/my?team=" + teamId.toString()} className='w-screen h-1/2 object-contain' />}
+            {teamId && <img ref={imageRef} src={SERVER_URL + "/photo/my?team=" + teamId.toString()} className='w-screen h-1/2 object-contain' />}
         </div>
     )
 }
