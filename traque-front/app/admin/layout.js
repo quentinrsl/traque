@@ -9,8 +9,8 @@ export default function AdminLayout({ children}) {
                 <div className='h-full flex flex-col'>
                     <div className="text-xl max-h-15 bg-gray-800 text-white  flex items-center justify-left">
                         <ul className='flex' >
-                            <li className="p-5 bg-gray-800 hover:bg-gray-600 transition-all cursor-pointer h-full"><Link href="/admin">Admin</Link></li>
-                            <li className="p-5 bg-gray-800 hover:bg-gray-600 transition-all cursor-pointer h-full"><Link href="/admin/teams">Teams</Link></li>
+                            <Link href="/admin"><li className="p-5 bg-gray-800 hover:bg-gray-600 transition-all cursor-pointer h-full">Admin</li></Link>
+                            <Link href="/admin/teams"><li className="p-5 bg-gray-800 hover:bg-gray-600 transition-all cursor-pointer h-full">Teams</li></Link>
                         </ul> 
                     </div>
                     <div className="h-full overflow-y-scroll">
