@@ -24,6 +24,7 @@ export default class Game {
         }
         //The game has started
         if (newState == GameState.PLAYING) {
+            penaltyController.start();
             if (!this.zone.ready()) {
                 return false;
             }

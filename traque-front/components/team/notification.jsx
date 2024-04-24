@@ -41,7 +41,7 @@ export function Notification({socket }) {
     return ( 
         Object.keys(bgColorMap).map((key) =>
             notification?.type == key && 
-            <div className={classNames + bgColorMap[key]} onClick={() => setVisible(false)}>
+            <div key={key} className={classNames + bgColorMap[key]} onClick={() => setVisible(false)}>
                 <p className='text-center text-xl'>{notification?.text}</p>
             </div>
     ));

@@ -49,7 +49,6 @@ function onUpdateZone(zone) {
 
 export const game = new Game(onUpdateZone, onUpdateNewZone);
 export const penaltyController = new PenaltyController();
-penaltyController.init()
 
 
 initAdminSocketHandler();

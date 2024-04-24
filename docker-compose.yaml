@@ -1,22 +1,18 @@
 services:
   front:
     build: ./traque-front
+    restart: always
+  
+  reverse_proxy:
+    build: ./proxy
     ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_SOCKET_HOST = 'quentinrsl.com'
-      - NEXT_PUBLIC_SOCKET_PORT = 3001
+      - "3000:443"
+    volumes:
+      - ./traque-back/ssl:/etc/nginx/ssl:ro
+    restart: always
 
   back:
     build: ./traque-back
     ports:
       - "3001:3001"
-    environment:
-      - HOST = 'quentinrsl.com'
-      - PORT = 3001
-      - SSL_KEY = "/etc/letsencrypt/live/quentinrsl.com/privkey.pem"
-      - SSL_CERT = "/etc/letsencrypt/live/quentinrsl.com/cert.pem"
-      - ADMIN_PASSWORD = 'admin'
-      - MAX_PENALTIES = 3
-      - ALLOWED_TIME_OUT_OF_ZONE_IN_MINUTES = 10
-      - ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES = 10
+    restart: always

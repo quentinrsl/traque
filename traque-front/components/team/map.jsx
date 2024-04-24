@@ -71,7 +71,7 @@ export function LiveMap({ ...props }) {
                 shadowSize: [41, 41]
             })}>
                 <Popup>
-                    Position de l'ennemi
+                    Position de l&aposennemi
                 </Popup>
             </Marker>}
             <MapPan center={currentPosition} />

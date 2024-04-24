@@ -122,6 +122,7 @@ export function initAdminSocketHandler() {
             }
             if (game.reorderTeams(newOrder)) {
                 secureAdminBroadcast("teams", game.teams);
+                game.teams.forEach(t => sendUpdatedTeamInformations(t.id))
             } else {
                 socket.emit("error", "Error reordering teams");
             }

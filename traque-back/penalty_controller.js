@@ -14,7 +14,7 @@ export class PenaltyController {
         this.checkIntervalId = null;
     }
 
-    init() {
+    start() {
         this.outOfBoundsSince = {};
         if(this.checkIntervalId) {
             clearInterval(this.checkIntervalId)
@@ -62,6 +62,7 @@ export class PenaltyController {
     }
 
     watchZone() {
+        console.log("watching zone")
         this.game.teams.forEach((team) => {
             if (team.captured) { return }
             //All the informations are not ready yet
@@ -69,9 +70,11 @@ export class PenaltyController {
                 return;
             }
             if (!isInCircle({lat: team.currentLocation[0], lng: team.currentLocation[1]}, this.game.zone.currentZone.center, this.game.zone.currentZone.radius)) {
+                console.log("tema " + team.name + " out of zone")
                 //The team was not previously out of the zone
                 if (!this.outOfBoundsSince[team.id]) {
                     this.outOfBoundsSince[team.id] = new Date();
+                    console.log("tema " + team.name + " warned")
                     teamBroadcast(team.id, "warning", `You left the zone, you have ${process.env.ALLOWED_TIME_OUT_OF_ZONE_IN_MINUTES} minutes to get back in the marked area.`)
                 } else {
                     if (new Date() - this.outOfBoundsSince[team.id] > process.env.ALLOWED_TIME_OUT_OF_ZONE_IN_MINUTES * 60 * 1000) {

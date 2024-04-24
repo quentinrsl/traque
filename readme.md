@@ -4,7 +4,7 @@
 Edit the .env file in traque-front and add specify the following values:
 ```
 NEXT_PUBLIC_SOCKET_HOST = 'example.com'
-NEXT_PUBLIC_SOCKET_PORT = 3000
+NEXT_PUBLIC_SOCKET_PORT = 3001
 ```
 Where NEXT_PUBLIC_SOCKET_HOST is the host of the socket server and NEXT_PUBLIC_SOCKET_PORT is the port of the socket server.
 ### Back end configuration
@@ -25,6 +25,8 @@ MAX_PENALTIES is the maximum number of penalties a user can have before loosing 
 ALLOWED_TIME_OUT_OF_ZONE_IN_MINUTES is the time a user can be out of the zone before being penalized.
 ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES is the maximum amount of time a user can wait before updating their position, after this period they will recieve a pennalty.
 
+Note : make sure PORT and NEXT_PUBLIC_SOCKET_PORT are the same
+
 ### Running the project
 #### Front end
 To run the front end, navigate to the traque-front directory and run the following commands:
@@ -43,5 +45,9 @@ Then navigate to the host and port specified in the .env file to access the appl
 https://example.com:3000
 ```
 
-## Depployment
+## Deployment
+
+### SSL certificates
+Put your certificate and private key in the traque-back/ssl folder. They need to be named `cert.pem` and `privkey.pem`.
+You can then depploy the docker application with `docker compose up`
 
