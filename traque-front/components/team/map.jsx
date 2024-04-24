@@ -35,7 +35,7 @@ function ZoneExtremities() {
     const { zoneExtremities } = useTeamContext();
     console.log('Zone extremities', zoneExtremities);
     return zoneExtremities?.begin && zoneExtremities?.end && <>
-        <Circle center={zoneExtremities.begin.center} radius={zoneExtremities.begin.radius} color='black' fill={false} />
+        {/* <Circle center={zoneExtremities.begin.center} radius={zoneExtremities.begin.radius} color='black' fill={false} /> */}
         <Circle center={zoneExtremities.end.center} radius={zoneExtremities.end.radius} color='red' fill={false} />
     </>
 
@@ -71,7 +71,7 @@ export function LiveMap({ ...props }) {
                 shadowSize: [41, 41]
             })}>
                 <Popup>
-                    Position de l&aposennemi
+                    Position de l&apos;ennemi
                 </Popup>
             </Marker>}
             <MapPan center={currentPosition} />

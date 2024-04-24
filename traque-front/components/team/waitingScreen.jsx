@@ -36,7 +36,7 @@ export function WaitingScreen() {
                 Jeu en préparation, veuillez patienter...
             </div>
             <div className='text-2xl text-center my-10'>
-                <p>Uploadez une photo où tous les membres de l&aposéquipe sont visibles</p>
+                <p>Uploadez une photo où tous les membres de l&apos;équipe sont visibles</p>
                 <input type="file" name="file" accept="image/*" className=" my-5 block w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
                 <div className="h-20">
                 <GreenButton onClick={sendImage}>Envoyer</GreenButton>
