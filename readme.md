@@ -47,8 +47,5 @@ https://example.com:3000
 ```
 
 ## Deployment
-
-### SSL certificates
 Put your certificate and private key in the traque-back/ssl folder. They need to be named `cert.pem` and `privkey.pem`.
 You can then depploy the docker application with `docker compose up`
-
