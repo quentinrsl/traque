@@ -65,9 +65,9 @@ export default function ActionDrawer() {
                         <GreenButton onClick={handleCapture}>Capture target</GreenButton>
                     </div>
                 </div>
-                <div className="h-20">
+                {/* <div className="h-20">
                     <RedButton onClick={sendCurrentPosition}>Signal emergency</RedButton>
-                </div>
+                </div> */}
             </div>
             }
         <EnemyTeamModal visible={enemyModalVisible} onClose={() => setEnemyModalVisible(false)} />
