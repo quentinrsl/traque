@@ -1,4 +1,4 @@
-import { io, game } from "./index.js";
+import { io, game, penaltyController } from "./index.js";
 import { playersBroadcast, sendUpdatedTeamInformations } from "./team_socket.js";
 
 import { config } from "dotenv";
@@ -45,6 +45,8 @@ export function initAdminSocketHandler() {
                 //Send the current state
                 socket.emit("game_state", game.state)
                 //Other settings that need initialization
+                socket.emit("penalty_settings", penaltyController.settings)
+                socket.emit("game_settings", game.settings)
                 socket.emit("zone_settings", game.zone.zoneSettings)
                 socket.emit("zone", game.zone.currentZone)
                 socket.emit("new_zone", {
@@ -58,6 +60,18 @@ export function initAdminSocketHandler() {
             }
         });
 
+        socket.on("set_game_settings", (settings) => {
+            if (!loggedIn) {
+                socket.emit("error", "Not logged in");
+                return;
+            }
+            if(!game.changeSettings(settings)) {
+                socket.emit("error", "Invalid settings");
+            }
+            secureAdminBroadcast("game_settings",game.settings);
+            playersBroadcast("game_settings", game.settings);
+        })
+
         socket.on("set_zone_settings", (settings) => {
             if (!loggedIn) {
                 socket.emit("error", "Not logged in");
@@ -68,6 +82,20 @@ export function initAdminSocketHandler() {
                 socket.emit("zone_settings", game.zone.zoneSettings) //Still broadcast the old config to the client who submited an incorrect config to keep the client up to date
             } else {
                 secureAdminBroadcast("zone_settings", game.zone.zoneSettings)
+            }
+
+        })
+
+        socket.on("set_penalty_settings", (settings) => {
+            if (!loggedIn) {
+                socket.emit("error", "Not logged in");
+                return;
+            }
+            if(!penaltyController.updateSettings(settings)) {
+                socket.emit("error", "Invalid settings");
+                socket.emit("penalty_settings", penaltyController.settings)
+            }else {
+                secureAdminBroadcast("penalty_settings", penaltyController.settings)
             }
 
         })

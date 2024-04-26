@@ -75,6 +75,7 @@ export function initTeamSocket() {
             sendUpdatedTeamInformations(loginTeamId);
             socket.emit("login_response", true);
             socket.emit("game_state", game.state)
+            socket.emit("game_settings", game.settings)
             socket.emit("zone", game.zone.currentZone)
             socket.emit("new_zone", {
                 begin: game.zone.currentStartZone,
@@ -111,6 +112,7 @@ export function initTeamSocket() {
             }
             game.updateTeamChasing();
             teamBroadcast(teamId, "update_team", { enemyLocation: team.enemyLocation,locationSendDeadline: team.locationSendDeadline  });
+            teamBroadcast(teamId,"success", "Position udpated")
             secureAdminBroadcast("teams", game.teams)
         });
 
