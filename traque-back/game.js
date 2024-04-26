@@ -16,6 +16,17 @@ export default class Game {
         this.teams = [];
         this.state = GameState.SETUP;
         this.zone = new ZoneManager(onUpdateZone, onUpdateNewZone)
+        this.settings = {
+            loserEndGameMessage: "",
+            winnerEndGameMessage: "",
+            capturedMessage: "",
+            waitingMessage: "Jeu en préparation, veuillez patienter."
+        }
+    }
+
+    changeSettings(newSettings) {
+        this.settings = {...this.settings, ...newSettings};
+        return true;
     }
 
     setState(newState) {
@@ -31,7 +42,7 @@ export default class Game {
             this.initLastSentLocations();
             this.zone.reset()
             //If the zone cannot be setup, reset everything
-            if(!this.zone.start()) {
+            if (!this.zone.start()) {
                 this.setState(GameState.SETUP);
                 return;
             }
@@ -41,10 +52,14 @@ export default class Game {
             penaltyController.stop();
         }
         //Game reset
-        if(newState == GameState.SETUP) {
-            for(let team of this.teams) {
+        if (newState == GameState.SETUP) {
+            for (let team of this.teams) {
                 team.penalties = 0;
                 team.captured = false;
+                team.enemyLocation = null;
+                team.enemyName = null;
+                team.currentLocation = null;
+                team.lastSentLocation = null;
             }
             this.updateTeamChasing();
         }
@@ -99,7 +114,7 @@ export default class Game {
 
     updateTeamChasing() {
         if (this.playingTeamCount() <= 2) {
-            if(this.state == GameState.PLAYING) {
+            if (this.state == GameState.PLAYING) {
                 this.finishGame()
             }
             return false;
@@ -143,6 +158,7 @@ export default class Game {
             }
         })
         this.updateTeamChasing();
+        penaltyController.checkPenalties();
         return true;
     }
 
@@ -164,7 +180,7 @@ export default class Game {
     initLastSentLocations() {
         for (let team of this.teams) {
             team.lastSentLocation = team.currentLocation;
-            team.locationSendDeadline = Number(new Date()) + process.env.ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES * 60 * 1000;
+            team.locationSendDeadline = Number(new Date()) + penaltyController.settings.allowedTimeBetweenPositionUpdate * 60 * 1000;
             sendUpdatedTeamInformations(team.id);
         }
     }
@@ -174,7 +190,7 @@ export default class Game {
         if (team == undefined) {
             return false;
         }
-        team.locationSendDeadline = Number(new Date()) + process.env.ALLOWED_TIME_BETWEEN_POSITION_UPDATE_IN_MINUTES * 60 * 1000;
+        team.locationSendDeadline = Number(new Date()) + penaltyController.settings.allowedTimeBetweenPositionUpdate * 60 * 1000;
         team.lastSentLocation = team.currentLocation;
         if (this.getTeam(team.chasing) != null) {
             team.enemyLocation = this.getTeam(team.chasing).lastSentLocation;
