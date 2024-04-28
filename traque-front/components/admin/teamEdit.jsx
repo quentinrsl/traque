@@ -42,10 +42,9 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
     }
 
     return (team &&
-        <div className='flex flex-col h-full'>
-
-            <div className='flex flex-row'>
-                <div className='w-1/2 flex flex-col space-y-3 mx-2'>
+        <div className='flex flex-col w-full h-full'>
+            <div className='flex flex-row gap-2'>
+                <div className='flex w-1/2 flex-col gap-2 h-min self-start'>
                     <h2 className='text-2xl text-center'>Actions</h2>
                     <form className='flex flex-row' onSubmit={handleRename}>
                         <div className='w-4/5'>
@@ -55,10 +54,12 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                             <BlueButton type="submit">Rename</BlueButton>
                         </div>
                     </form>
-                    <BlueButton onClick={() => updateTeam(team.id, { captured: !team.captured })}>{team.captured ? "Revive" : "Capture"}</BlueButton>
-                    <RedButton onClick={handleRemove}>Remove</RedButton>
+                    <div className='flex flex-row'>
+                        <BlueButton onClick={() => updateTeam(team.id, { captured: !team.captured })}>{team.captured ? "Revive" : "Capture"}</BlueButton>
+                        <RedButton onClick={handleRemove}>Remove</RedButton>
+                    </div>
                 </div>
-                <div className='w-1/2 flex flex-col space-y-2 mx-2'>
+                <div className='flex w-1/2 flex-col space-y-2 h-min self-start'>
                     <h2 className='text-2xl text-center'>Team details</h2>
                     <div>
                         <p>Secret : {String(team.id).padStart(6, '0')}</p>
@@ -77,18 +78,16 @@ export default function TeamEdit({ selectedTeamId, setSelectedTeamId }) {
                     </div>
                 </div>
             </div>
-            <div className='flex flex-row h-full w-full'>
-                <div className='w-1/2 h-full p-5 flex flex-col'>
-                    <h2 className='text-2xl text-center'>Starting area</h2>
-                    <div className='h-full p-5'>
-                        <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => updateTeam(team.id, { startingArea })} markerPosition={team?.currentLocation} />
-                    </div>
+            <div className='flex flex-row'>
+                <p className='text-2xl text-center w-full'>Starting zone</p>
+                <p className='text-2xl text-center w-full'>Profile picture</p>
+            </div>
+            <div className='flex grow flex-row'>
+                <div className='w-1/2'>
+                    <CircularAreaPicker area={team.startingArea} setArea={(startingArea) => updateTeam(team.id, { startingArea })} markerPosition={team?.currentLocation} />
                 </div>
-                <div className='w-1/2 h-full p-5 flex flex-col'>
-                    <h2 className='text-2xl text-center'>Team photo</h2>
-                    <div className='h-full p-5'>
-                    <img ref={teamImage} className='w-full h-full object-contain' />
-                    </div>
+                <div className='w-1/2'>
+                    <img className='self-stretch' ref={teamImage} />
                 </div>
             </div>
         </div>

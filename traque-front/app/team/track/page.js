@@ -6,6 +6,7 @@ import { WaitingScreen } from '@/components/team/waitingScreen';
 import { LogoutButton } from '@/components/util/button';
 import { useSocket } from '@/context/socketContext';
 import { useTeamConnexion } from '@/context/teamConnexionContext';
+import { useTeamContext } from '@/context/teamContext';
 import useGame from '@/hook/useGame';
 import { GameState } from '@/util/gameState';
 import dynamic from 'next/dynamic';
@@ -20,7 +21,8 @@ const PlacementMap = dynamic(() => import('@/components/team/map').then((mod) =>
 });
 
 export default function Track() {
-    const { gameState, captured } = useGame();
+    const { gameState, captured  } = useGame();
+    const { gameSettings} = useTeamContext()
     const { useProtect } = useTeamConnexion();
     const { teamSocket: socket } = useSocket();
     useProtect();
@@ -34,7 +36,7 @@ export default function Track() {
         }
         {gameState == GameState.PLAYING && captured && <div className='h-full'>
             <div className='text-center text-2xl'>Vous avez été capturé</div>
-            <div className='text-center text-md'>Instructions de retour ici</div>
+            <div className='text-center text-md'>{gameSettings?.capturedMessage}</div>
         </div>}
         {gameState == GameState.PLACEMENT &&
             <div className='h-full'>
@@ -45,8 +47,8 @@ export default function Track() {
         {gameState == GameState.FINISHED && <div className='h-full'>
             <LogoutButton />
             <div className='text-center text-2xl'>Partie terminée</div>
-            {captured && <div className='text-center text-md'>Vous avez perdu</div>}
-            {!captured && <div className='text-center text-md'>Vous avez gagné</div>}
+            {captured && <div className='text-center text-md'>{gameSettings?.loserEndGameMessage}</div>}
+            {!captured && <div className='text-center text-md'>{gameSettings?.winnerEndGameMessage}</div>}
         </div>
         }
     </>

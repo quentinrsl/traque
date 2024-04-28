@@ -2,9 +2,11 @@ import useGame from "@/hook/useGame"
 import { GreenButton, LogoutButton } from "../util/button";
 import { useRef } from "react";
 import Image from "next/image";
+import { useTeamContext } from "@/context/teamContext";
 
 export function WaitingScreen() {
-    const { name, teamId } = useGame();
+    const { name, teamId  } = useGame();
+    const { gameSettings } = useTeamContext();
     const imageRef = useRef(null);
     const SERVER_URL = "https://" + process.env.NEXT_PUBLIC_SOCKET_HOST + ":" + process.env.NEXT_PUBLIC_SOCKET_PORT;
 
@@ -33,7 +35,7 @@ export function WaitingScreen() {
                 Equipe : {name}
             </div>
             <div className='text-2xl text-center'>
-                Jeu en préparation, veuillez patienter...
+                {gameSettings?.waitingMessage}
             </div>
             <div className='text-2xl text-center my-10'>
                 <p>Uploadez une photo où tous les membres de l&apos;équipe sont visibles</p>
