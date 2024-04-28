@@ -36,6 +36,9 @@ function logoutPlayer(id) {
 
 export function sendUpdatedTeamInformations(teamId) {
     let team = game.getTeam(teamId)
+    if(!team) {
+        return false;
+    }
     team.sockets.forEach(socketId => {
         io.of("player").to(socketId).emit("update_team", {
             name: team.name,

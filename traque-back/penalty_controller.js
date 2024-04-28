@@ -79,9 +79,9 @@ export class PenaltyController {
         for (let team of game.teams) {
             if (team.penalties >= this.settings.maxPenalties) {
                 this.game.capture(team.id);
-                sendUpdatedTeamInformations(teamId);
+                sendUpdatedTeamInformations(team.id);
                 sendUpdatedTeamInformations(team.chased);
-                teamBroadcast(teamId, "warning", "You have been eliminated (reason: too many penalties)")
+                teamBroadcast(team.id, "warning", "You have been eliminated (reason: too many penalties)")
                 teamBroadcast(team.chased, "success", "The team you were chasing has been eliminated")
             }
         }
