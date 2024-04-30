@@ -99,6 +99,10 @@ export function initTeamSocket() {
                 return;
             }
             let team = game.getTeam(teamId)
+            if(team == undefined) {
+                logoutPlayer(socket.id);
+                return;
+            }
             if (team.sockets.indexOf(socket.id) == 0) {
                 game.updateLocation(teamId, position);
                 teamBroadcast(teamId, "update_team", { currentLocation: team.currentLocation, ready: team.ready });
@@ -120,8 +124,8 @@ export function initTeamSocket() {
         });
 
         socket.on('capture', (captureCode) => {
-            let capturedTeam = game.getTeam(teamId).chasing
-            if (game.requestCapture(teamId, captureCode)) {
+            let capturedTeam = game.getTeam(teamId)?.chasing
+            if (capturedTeam !== undefined && game.requestCapture(teamId, captureCode)) {
                 sendUpdatedTeamInformations(teamId)
                 sendUpdatedTeamInformations(capturedTeam)
                 secureAdminBroadcast("teams", game.teams);
