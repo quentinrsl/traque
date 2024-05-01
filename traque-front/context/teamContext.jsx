@@ -14,7 +14,7 @@ function TeamProvider({children}) {
     const [gameSettings, setGameSettings] = useState(null);
     const [zone, setZone] = useState(null);
     const [zoneExtremities, setZoneExtremities] = useState(null);
-    const measuredLocation = useLocation(10000);
+    const measuredLocation = useLocation(5000);
     const {teamSocket} = useSocket();
     const {loggedIn} = useTeamConnexion();
     const teamInfosRef = useRef();
