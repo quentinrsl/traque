@@ -39,11 +39,12 @@ export function Notification({ socket }) {
         success: "bg-green-500",
         warning: "bg-yellow-500"
     }
-    const classNames = 'fixed w-11/12 p-5 z-30 mx-auto inset-x-0 flex justify-center rounded-xl transition-all shadow-xl ' + (visible ? "top-5 " : "-translate-y-full ");
+    const classNames = 'fixed relative w-11/12 p-5 z-30 mx-auto inset-x-0 flex justify-center rounded-xl transition-all shadow-xl ' + (visible ? "top-5 " : "-translate-y-full ");
     return (
         Object.keys(bgColorMap).map((key) =>
             notification?.type == key &&
             <div key={key} className={classNames + bgColorMap[key]} onClick={() => setVisible(false)}>
+                <p className="absolute top-2 right-2 p-2 rounded-l text-3xl bg-white">x</p>
                 <p className='text-center text-xl'>{notification?.text}</p>
             </div>
         ));

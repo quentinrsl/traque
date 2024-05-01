@@ -3,7 +3,6 @@
 import { useSocket } from "@/context/socketContext";
 import { useTeamConnexion } from "@/context/teamConnexionContext";
 import { useTeamContext } from "@/context/teamContext";
-import { useEffect } from "react";
 
 export default function useGame() {
     const { teamSocket } = useSocket();
