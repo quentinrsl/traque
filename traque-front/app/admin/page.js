@@ -11,7 +11,7 @@ import dynamic from "next/dynamic";
 const ZoneSelector = dynamic(() => import('@/components/admin/zoneSelector').then((mod) => mod.ZoneSelector), {
     ssr: false
 });
-const LiveMap = dynamic(() => import('@/components/admin/mapPicker').then((mod) => mod.LiveMap), {
+const LiveMap = dynamic(() => import('@/components/admin/maps').then((mod) => mod.ZoneEditor), {
     ssr: false
 });
 export default function AdminPage() {

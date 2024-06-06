@@ -38,7 +38,7 @@ export function useMapCircleDraw(area, setArea) {
     }
 }
 
-export function useMapGrid(coloredTiles, tileSize) {
+export function useMapGrid(tilesColor, tileSize) {
     const { layerContainer, map } = useLeafletContext();
     const [grid, setGrid] = useState(null);
 
@@ -79,15 +79,12 @@ export function useMapGrid(coloredTiles, tileSize) {
                     const yMinPixel = Math.round(size.y * (y - minTileY) / (maxTileY - minTileY));
                     const yMaxPixel = Math.round(size.y * (y + 1 - minTileY) / (maxTileY - minTileY));
 
-                    // fill the rectangle with a color
-                    // if(coloredTiles.some(t => t.equals(tile))) {
-                    //     console.log(coloredTiles, "filling tile " + tile.x + " " + tile.y)
-                    // } else {
-                    //     console.log(coloredTiles, "not filling tile " + tile.x + " " + tile.y)
-                    // }
-                    ctx.fillStyle = this.coloredTiles && this.coloredTiles.some(t => t.equals(tile))
-                        ? 'rgba(0, 0, 255, 0.3)'
-                        : 'rgba(255, 255, 255, 0)';
+                    if (this.tilesColor?.some(t => t.x == tile.x && t.y == tile.y)) {
+                        ctx.fillStyle = this.tilesColor.find(t => t.x == tile.x && t.y == tile.y).color;
+                    }
+                    else {
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0)';
+                    }
                     ctx.fillRect(xMinPixel, yMinPixel, xMaxPixel - xMinPixel, yMaxPixel - yMinPixel);
                 }
             }
@@ -105,8 +102,25 @@ export function useMapGrid(coloredTiles, tileSize) {
 
     useEffect(() => {
         if (grid) {
-            grid.coloredTiles = coloredTiles;
+            grid.tilesColor = tilesColor;
             grid.redraw();
         }
-    }, [coloredTiles]);
+    }, [tilesColor,grid]);
+}
+
+export function useTilesColor(zone) {
+    const [tilesColor, setTilesColor] = useState([]);
+    useEffect(() => {
+        if (zone) {
+            setTilesColor(zone.map(t => {
+                if(t.removeDate == null) {
+                    return { x: t.x, y: t.y, color: 'rgba(0, 0, 255, 0.3'}
+                }else {
+                    return { x: t.x, y: t.y, color: 'rgba(255, 255, 0, 0.3'}
+                }
+
+            }));
+        }
+    }, [zone]);
+    return tilesColor;
 }

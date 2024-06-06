@@ -39,8 +39,12 @@ export default function useAdmin(){
         adminSocket.emit("change_state", state);
     }
 
-    function changeZoneSettings(zone) {
-        adminSocket.emit("set_zone_settings", zone);
+    function initZone(zone) {
+        adminSocket.emit("set_zone", zone);
+    }
+
+    function removeZone(zone, time) {
+        adminSocket.emit("remove_zone", zone, time);
     }
 
     function changePenaltySettings(penalties) {
@@ -50,6 +54,6 @@ export default function useAdmin(){
     function changeGameSettings(settings) {
         adminSocket.emit("set_game_settings", settings);
     }
-    return {...adminContext,changeGameSettings, changeZoneSettings, changePenaltySettings, pollTeams, getTeam, getTeamName, reorderTeams, addTeam, removeTeam, changeState, updateTeam };
+    return {...adminContext,changeGameSettings, removeZone, initZone, changePenaltySettings, pollTeams, getTeam, getTeamName, reorderTeams, addTeam, removeTeam, changeState, updateTeam };
 
 }
