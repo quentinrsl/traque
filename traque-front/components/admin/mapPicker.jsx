@@ -2,9 +2,12 @@
 import { useLocation } from "@/hook/useLocation";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
-import { Circle, MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import L from "leaflet";
+import { Circle, LayersControl, MapContainer, Marker, Popup, TileLayer, useMap} from "react-leaflet";
 import { useMapCircleDraw } from "@/hook/mapDrawing";
 import useAdmin from "@/hook/useAdmin";
+import { MapGridZoneSelector } from "./mapZoneSelector.jsx";
+
 
 function MapPan(props) {
     const map = useMap();
@@ -36,7 +39,7 @@ function MapEventListener({ onClick, onMouseMove }) {
     return null;
 }
 
-const DEFAULT_ZOOM = 17;
+const DEFAULT_ZOOM = 13;
 export function CircularAreaPicker({ area, setArea, markerPosition, ...props }) {
     const location = useLocation(Infinity);
     const { handleClick, handleMouseMove, center, radius } = useMapCircleDraw(area, setArea);
@@ -58,38 +61,28 @@ export function CircularAreaPicker({ area, setArea, markerPosition, ...props }) 
             <MapEventListener onClick={handleClick} onMouseMove={handleMouseMove} />
         </MapContainer>)
 }
-export const EditMode = {
-    MIN: 0,
-    MAX: 1
-}
-export function ZonePicker({ minZone, setMinZone, maxZone, setMaxZone, editMode, ...props }) {
+
+//https://stackoverflow.com/questions/71231865/show-fixed-100-m-x-100-m-grid-on-lowest-zoom-level
+
+export function ZonePicker({ ...props }) {
     const location = useLocation(Infinity);
-    const { handleClick: maxClick, handleMouseMove: maxHover, center: maxCenter, radius: maxRadius } = useMapCircleDraw(minZone, setMinZone);
-    const { handleClick: minClick, handleMouseMove: minHover, center: minCenter, radius: minRadius } = useMapCircleDraw(maxZone, setMaxZone);
-    function handleClick(e) {
-        if (editMode == EditMode.MAX) {
-            maxClick(e);
-        } else {
-            minClick(e);
-        }
-    }
-    function handleMouseMove(e) {
-        if (editMode == EditMode.MAX) {
-            maxHover(e);
-        } else {
-            minHover(e);
-        }
-    }
+    const [coloredTiles, setColoredTiles] = useState([]);
+
+    useEffect(() => {
+        console.log(coloredTiles)
+    }, [coloredTiles]);
     return (
         <MapContainer  {...props} className='min-h-full w-full ' center={[0, 0]} zoom={0} scrollWheelZoom={true}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {minCenter && minRadius && <Circle center={minCenter} radius={minRadius} color="blue" fillColor="blue" />}
-            {maxCenter && maxRadius && <Circle center={maxCenter} radius={maxRadius} color="red" fillColor="red" />}
             <MapPan center={location} zoom={DEFAULT_ZOOM} />
-            <MapEventListener onClick={handleClick} onMouseMove={handleMouseMove} />
+            <LayersControl>
+                <LayersControl.Overlay name="Grid" checked={true}>
+                    <MapGridZoneSelector onSelectedTile={setColoredTiles} tileSize={16}/>
+                </LayersControl.Overlay>
+            </LayersControl>
         </MapContainer>
     )
 }
