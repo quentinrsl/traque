@@ -11,6 +11,7 @@ import { useAdminContext } from "@/context/adminContext.jsx";
 import { GreenButton } from "../util/button.jsx";
 import TextInput from "../util/textInput.jsx";
 
+export const TILE_SIZE = 17
 
 function MapPan(props) {
     const map = useMap();
@@ -94,7 +95,7 @@ export function ZoneInitializer({ ...props }) {
             <LayersControl>
                 <LayersControl.Overlay name="Play area" checked={true}>
                     <LayerGroup>
-                        <MapGridZoneSelector tilesColor={tilesColor} onClickTile={handleClickTile} tileSize={16} />
+                        <MapGridZoneSelector tilesColor={tilesColor} onClickTile={handleClickTile} tileSize={TILE_SIZE} />
                     </LayerGroup>
                 </LayersControl.Overlay>
             </LayersControl>
@@ -203,7 +204,7 @@ export function LiveMap({ ...props }) {
             <LayersControl>
                 <LayersControl.Overlay name="Play area" checked={true}>
                     <LayerGroup>
-                        <MapGridZoneSelector tilesColor={tilesColor} onClickTile={() => { }} tileSize={16} />
+                        <MapGridZoneSelector tilesColor={tilesColor} onClickTile={() => { }} tileSize={TILE_SIZE} />
                     </LayerGroup>
                 </LayersControl.Overlay>
                 <LayersControl.Overlay name="Players live position" checked={true}>

@@ -8,6 +8,7 @@ import useGame from '@/hook/useGame';
 import { useTeamContext } from '@/context/teamContext';
 import {  useTilesColor } from '@/hook/mapDrawing';
 import { MapGridZoneSelector } from '../admin/mapZoneSelector';
+import { TILE_SIZE } from '../admin/maps';
 
 const DEFAULT_ZOOM = 17;
 
@@ -64,7 +65,7 @@ export function LiveMap({ ...props }) {
             <LayersControl>
                 <LayersControl.Overlay name="Play area" checked={true}>
                     <LayerGroup>
-                        <MapGridZoneSelector tilesColor={tilesColor} onClickTile={()=>{}} tileSize={16}/>
+                        <MapGridZoneSelector tilesColor={tilesColor} onClickTile={()=>{}} tileSize={TILE_SIZE}/>
                     </LayerGroup>
                 </LayersControl.Overlay>
             </LayersControl>
