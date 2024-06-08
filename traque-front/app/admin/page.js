@@ -11,7 +11,7 @@ import dynamic from "next/dynamic";
 const ZoneSelector = dynamic(() => import('@/components/admin/zoneSelector').then((mod) => mod.ZoneSelector), {
     ssr: false
 });
-const LiveMap = dynamic(() => import('@/components/admin/maps').then((mod) => mod.ZoneEditor), {
+const ZoneEditor = dynamic(() => import('@/components/admin/maps').then((mod) => mod.ZoneEditor), {
     ssr: false
 });
 export default function AdminPage() {
@@ -36,7 +36,7 @@ export default function AdminPage() {
             {(gameState == GameState.SETUP || gameState == GameState.PLACEMENT) && <ZoneSelector />}
             {(gameState == GameState.SETUP || gameState == GameState.PLACEMENT) && <PenaltySettings />}
             {gameState == GameState.PLAYING && <div className='grow flex-1 row-span-2 bg-white p-10 flex shadow-2xl'>
-                <LiveMap />
+                <ZoneEditor />
             </div>}
         </div>
     )

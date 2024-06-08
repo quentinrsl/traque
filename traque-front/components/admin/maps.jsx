@@ -107,7 +107,7 @@ export function ZoneEditor() {
     const { zone, teams, getTeamName, removeZone } = useAdmin();
     const [zonesToDelete, setZonesToDelete] = useState([]);
     const [tilesColor, setTilesColor] = useState([]);
-    const [timeBeforeDeletion, setTimeBeforeDeletion] = useState(0);
+    const [timeBeforeDeletion, setTimeBeforeDeletion] = useState(null);
 
     function handleClickTile(tile) {
         if (!zone.some(t => t.x === tile.x && t.y === tile.y)) return;
@@ -127,6 +127,7 @@ export function ZoneEditor() {
             ...zone
                 .filter(t => !zonesToDelete.some(t2 => t.x == t2.x && t.y == t2.y))
                 .map(t => {
+                    console.log(t)
                     if (t.removeDate == null) {
                         return { x: t.x, y: t.y, color: 'rgba(0, 0, 255, 0.5)' }
                     } else {
@@ -137,44 +138,107 @@ export function ZoneEditor() {
     }, [zone, zonesToDelete]);
 
     const handleSubmit = (e) => {
+        if (timeBeforeDeletion == null) {
+            return;
+        }
         e.preventDefault();
         removeZone(zonesToDelete, timeBeforeDeletion);
         setZonesToDelete([]);
-        setTimeBeforeDeletion(0);
+        setTimeBeforeDeletion(null);
     }
 
 
     return (
         <div className="flex flex-col w-full">
-            <MapContainer className='min-h-full w-full ' center={location} zoom={DEFAULT_ZOOM} scrollWheelZoom={true}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <MapPan center={location} zoom={DEFAULT_ZOOM} />
-                {teams.map((team) => team.currentLocation && !team.captured && <Marker key={team.id} position={team.currentLocation} icon={new L.Icon({
-                    iconUrl: '/icons/location.png',
-                    iconSize: [41, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                })}>
-                    <Popup>
-                        <strong className="text-lg">{team.name}</strong>
-                        <p className="text-md">Chasing : {getTeamName(team.chasing)}</p>
-                        <p className="text-md">Chased by : {getTeamName(team.chased)}</p>
-                    </Popup>
-                </Marker>)}
-                <LayersControl>
-                    <LayersControl.Overlay name="Play area" checked={true}>
-                        <LayerGroup>
-                            <MapGridZoneSelector tilesColor={tilesColor} onClickTile={handleClickTile} tileSize={16} />
-                        </LayerGroup>
-                    </LayersControl.Overlay>
-                </LayersControl>
-            </MapContainer>
-            <TextInput placeholder="Time before deletion" value={timeBeforeDeletion} onChange={(e) => setTimeBeforeDeletion(Number(e.target.value))}></TextInput>
-            <GreenButton onClick={handleSubmit}>Delete selected zones</GreenButton>
+            <div className="h-full">
+                <MapContainer className='min-h-full w-full ' center={location} zoom={DEFAULT_ZOOM} scrollWheelZoom={true}>
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <MapPan center={location} zoom={DEFAULT_ZOOM} />
+                    {teams.map((team) => team.currentLocation && !team.captured && <Marker key={team.id} position={team.currentLocation} icon={new L.Icon({
+                        iconUrl: '/icons/location.png',
+                        iconSize: [41, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })}>
+                        <Popup>
+                            <strong className="text-lg">{team.name}</strong>
+                            <p className="text-md">Chasing : {getTeamName(team.chasing)}</p>
+                            <p className="text-md">Chased by : {getTeamName(team.chased)}</p>
+                        </Popup>
+                    </Marker>)}
+                    <LayersControl>
+                        <LayersControl.Overlay name="Play area" checked={true}>
+                            <LayerGroup>
+                                <MapGridZoneSelector tilesColor={tilesColor} onClickTile={handleClickTile} tileSize={16} />
+                            </LayerGroup>
+                        </LayersControl.Overlay>
+                    </LayersControl>
+                </MapContainer>
+            </div>
+            <div className="flex flex-row h-20">
+
+                <TextInput className="w-4/5" placeholder="Time before deletion" value={timeBeforeDeletion} onChange={(e) => setTimeBeforeDeletion(Number(e.target.value))}></TextInput>
+                <GreenButton className="w-1/5" onClick={handleSubmit}>Delete selected zones</GreenButton>
+            </div>
         </div>
+    )
+}
+
+export function LiveMap({ ...props }) {
+    const location = useLocation(Infinity);
+    const { zone, teams, getTeamName  } = useAdmin();
+    const tilesColor = useTilesColor(zone);
+
+    return (
+        <MapContainer  {...props} className='min-h-full w-full ' center={[0, 0]} zoom={0} scrollWheelZoom={true}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <MapPan center={location} zoom={DEFAULT_ZOOM} />
+            <LayersControl>
+                <LayersControl.Overlay name="Play area" checked={true}>
+                    <LayerGroup>
+                        <MapGridZoneSelector tilesColor={tilesColor} onClickTile={() => { }} tileSize={16} />
+                    </LayerGroup>
+                </LayersControl.Overlay>
+                <LayersControl.Overlay name="Players live position" checked={true}>
+                    <LayerGroup>
+                        {teams.map((team) => team.currentLocation && !team.captured && <Marker key={team.id} position={team.currentLocation} icon={new L.Icon({
+                            iconUrl: '/icons/location.png',
+                            iconSize: [41, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        })}>
+                            <Popup>
+                                <strong className="text-lg">{team.name}</strong>
+                                <p className="text-md">Chasing : {getTeamName(team.chasing)}</p>
+                                <p className="text-md">Chased by : {getTeamName(team.chased)}</p>
+                            </Popup>
+                        </Marker>)}
+                    </LayerGroup>
+                </LayersControl.Overlay>
+                <LayersControl.Overlay name="Players last sent position" checked={false}>
+                    <LayerGroup>
+                        {teams.map((team) => team.currentLocation && !team.captured && <Marker key={team.id} position={team.lastSentLocation} icon={new L.Icon({
+                            iconUrl: '/icons/clock.png',
+                            iconSize: [41, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        })}>
+                            <Popup>
+                                <strong className="text-lg">Last position of {team.name}</strong>
+                            </Popup>
+                        </Marker>)}
+                    </LayerGroup>
+                </LayersControl.Overlay>
+            </LayersControl>
+        </MapContainer>
     )
 }

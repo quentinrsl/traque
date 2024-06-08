@@ -2,6 +2,7 @@ export class TileNumber {
     constructor(x, y) {
         this.x = x;
         this.y = y;
+        this.removeDate = null;
     }
     equals(other) {
         return this.x === other.x && this.y === other.y;

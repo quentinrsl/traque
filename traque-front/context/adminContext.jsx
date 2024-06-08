@@ -28,7 +28,11 @@ function AdminProvider({ children }) {
     useSocketListener(adminSocket, "teams", setTeams);
     useSocketListener(adminSocket, "game_settings", setGameSettings);
     useSocketListener(adminSocket, "penalty_settings", setPenaltySettings);
-    useSocketListener(adminSocket, "zone", (zone) => setZone(zone.map(t => new TileNumber(t.x, t.y))));
+    useSocketListener(adminSocket, "zone", (zone) => setZone(zone.map(t => {
+        let tile = new TileNumber(t.x, t.y);
+        tile.removeDate = t.removeDate;
+        return tile;
+    })));
     useSocketListener(adminSocket, "new_zone", setZoneExtremities);
 
     const value = useMemo(() => ({ zone, zoneExtremities, teams, penaltySettings, gameSettings, gameState }), [teams, gameState, zone, zoneExtremities, penaltySettings, gameSettings]);
