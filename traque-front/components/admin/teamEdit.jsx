@@ -4,7 +4,7 @@ import BlueButton, { RedButton } from '../util/button';
 import useAdmin from '@/hook/useAdmin';
 import dynamic from 'next/dynamic';
 
-const CircularAreaPicker = dynamic(() => import('./mapPicker').then((mod) => mod.CircularAreaPicker), {
+const CircularAreaPicker = dynamic(() => import('./maps').then((mod) => mod.CircularAreaPicker), {
     ssr: false
 });
 
