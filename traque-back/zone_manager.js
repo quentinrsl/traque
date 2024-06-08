@@ -2,7 +2,7 @@ import { playersBroadcast, teamBroadcast } from './team_socket.js';
 import { secureAdminBroadcast } from './admin_socket.js';
 
 export let currentZone = []
-let tileSize = 16;
+let tileSize = 17;
 
 export class TileNumber {
     constructor(x, y) {
