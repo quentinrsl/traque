@@ -3,6 +3,7 @@ import { sendUpdatedTeamInformations, teamBroadcast } from "./team_socket.js";
 import { GameState } from "./game.js";
 import { secureAdminBroadcast } from "./admin_socket.js";
 import { game } from "./index.js";
+import { isInZone } from "./zone_manager.js";
 
 export class PenaltyController {
     constructor() {
@@ -91,10 +92,10 @@ export class PenaltyController {
         this.game.teams.forEach((team) => {
             if (team.captured) { return }
             //All the informations are not ready yet
-            if (team.currentLocation == null || this.game.zone.currentZone == null) {
+            if (team.currentLocation == null) {
                 return;
             }
-            if (!isInCircle({ lat: team.currentLocation[0], lng: team.currentLocation[1] }, this.game.zone.currentZone.center, this.game.zone.currentZone.radius)) {
+            if (!isInZone(team.currentLocation)) {
                 //The team was not previously out of the zone
                 if (!this.outOfBoundsSince[team.id]) {
                     this.outOfBoundsSince[team.id] = new Date();

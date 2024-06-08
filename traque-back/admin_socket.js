@@ -2,6 +2,8 @@ import { io, game, penaltyController } from "./index.js";
 import { playersBroadcast, sendUpdatedTeamInformations } from "./team_socket.js";
 
 import { config } from "dotenv";
+import { currentZone, initZone, removeZone } from "./zone_manager.js";
+import { GameState } from "./game.js";
 config()
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -47,12 +49,7 @@ export function initAdminSocketHandler() {
                 //Other settings that need initialization
                 socket.emit("penalty_settings", penaltyController.settings)
                 socket.emit("game_settings", game.settings)
-                socket.emit("zone_settings", game.zone.zoneSettings)
-                socket.emit("zone", game.zone.currentZone)
-                socket.emit("new_zone", {
-                    begin: game.zone.currentStartZone,
-                    end: game.zone.nextZone
-                })
+                socket.emit("zone", currentZone)
 
             } else {
                 //Attempt unsuccessful
@@ -72,19 +69,25 @@ export function initAdminSocketHandler() {
             playersBroadcast("game_settings", game.settings);
         })
 
-        socket.on("set_zone_settings", (settings) => {
+        socket.on("set_zone", (zone) => {
             if (!loggedIn) {
                 socket.emit("error", "Not logged in");
                 return;
             }
-            if (!game.setZoneSettings(settings)) {
-                socket.emit("error", "Error changing zone");
-                socket.emit("zone_settings", game.zone.zoneSettings) //Still broadcast the old config to the client who submited an incorrect config to keep the client up to date
-            } else {
-                secureAdminBroadcast("zone_settings", game.zone.zoneSettings)
+            if(game.state != GameState.PLAYING) {
+                initZone(zone)
+            }else {
+                socket.emit("error", "Game is not in setup state")
             }
-
         })
+
+        socket.on("remove_zone", (zone, time) => {
+            if (!loggedIn) {
+                socket.emit("error", "Not logged in");
+                return;
+            }
+            removeZone(zone, time)
+        });
 
         socket.on("set_penalty_settings", (settings) => {
             if (!loggedIn) {

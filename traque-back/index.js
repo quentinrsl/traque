@@ -35,19 +35,7 @@ export const io = new Server(httpsServer, {
   }
 });
 
-//Zone update broadcast function, called by the game object
-function onUpdateNewZone(newZone) {
-  playersBroadcast("new_zone", newZone)
-  secureAdminBroadcast("new_zone", newZone)
-}
-
-function onUpdateZone(zone) {
-  playersBroadcast("zone", zone)
-  secureAdminBroadcast("zone", zone)
-}
-
-
-export const game = new Game(onUpdateZone, onUpdateNewZone);
+export const game = new Game();
 export const penaltyController = new PenaltyController();
 
 
