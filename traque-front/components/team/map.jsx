@@ -1,14 +1,11 @@
 'use client';
 import React, { useEffect, useState } from 'react'
-import { Circle, LayerGroup, LayersControl, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import { Circle, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css'
 import "leaflet-defaulticon-compatibility";
 import "leaflet/dist/leaflet.css";
 import useGame from '@/hook/useGame';
 import { useTeamContext } from '@/context/teamContext';
-import {  useTilesColor } from '@/hook/mapDrawing';
-import { MapGridZoneSelector } from '../admin/mapZoneSelector';
-import { TILE_SIZE } from '../admin/maps';
 
 const DEFAULT_ZOOM = 17;
 
@@ -28,11 +25,27 @@ function MapPan(props) {
     return null;
 }
 
-export function LiveMap({ ...props }) {
-    const {zone} = useTeamContext();
-    const tilesColor = useTilesColor(zone);
-    const { currentPosition, enemyPosition } = useGame();
+function LiveZone() {
+    const { zone } = useTeamContext();
+    console.log('Zone', zone);
+    return zone && <Circle center={zone.center} radius={zone.radius} color='blue' fill={false} />
+}
 
+function ZoneExtremities() {
+    const { zoneExtremities } = useTeamContext();
+    console.log('Zone extremities', zoneExtremities);
+    return zoneExtremities?.begin && zoneExtremities?.end && <>
+        {/* <Circle center={zoneExtremities.begin.center} radius={zoneExtremities.begin.radius} color='black' fill={false} /> */}
+        <Circle center={zoneExtremities.end.center} radius={zoneExtremities.end.radius} color='red' fill={false} />
+    </>
+
+}
+
+export function LiveMap({ ...props }) {
+    const { currentPosition, enemyPosition } = useGame();
+    useEffect(() => {
+        console.log('Current position', currentPosition);
+    }, [currentPosition]);
     return (
         <MapContainer  {...props} className='min-h-full z-0' center={[0, 0]} zoom={0} scrollWheelZoom={true}>
             <TileLayer
@@ -62,13 +75,8 @@ export function LiveMap({ ...props }) {
                 </Popup>
             </Marker>}
             <MapPan center={currentPosition} />
-            <LayersControl>
-                <LayersControl.Overlay name="Play area" checked={true}>
-                    <LayerGroup>
-                        <MapGridZoneSelector tilesColor={tilesColor} onClickTile={()=>{}} tileSize={TILE_SIZE}/>
-                    </LayerGroup>
-                </LayersControl.Overlay>
-            </LayersControl>
+            <LiveZone />
+            <ZoneExtremities />
         </MapContainer>
     )
 }

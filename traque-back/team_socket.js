@@ -1,6 +1,5 @@
 import { secureAdminBroadcast } from "./admin_socket.js";
 import { io, game } from "./index.js";
-import { currentZone } from "./zone_manager.js";
 
 /**
  * Send a socket message to all the players of a team
@@ -9,13 +8,9 @@ import { currentZone } from "./zone_manager.js";
  * @param {*} data The payload
  */
 export function teamBroadcast(teamId, event, data) {
-    if(!game.getTeam(teamId)) {
-        return false;
-    }
     for (let socketId of game.getTeam(teamId).sockets) {
         io.of("player").to(socketId).emit(event, data)
     }
-    return true;
 }
 
 /**
@@ -84,7 +79,11 @@ export function initTeamSocket() {
             socket.emit("login_response", true);
             socket.emit("game_state", game.state)
             socket.emit("game_settings", game.settings)
-            socket.emit("zone", currentZone)
+            socket.emit("zone", game.zone.currentZone)
+            socket.emit("new_zone", {
+                begin: game.zone.currentStartZone,
+                end: game.zone.nextZone
+            })
         });
 
         socket.on("logout", () => {

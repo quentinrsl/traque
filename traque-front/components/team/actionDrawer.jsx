@@ -16,6 +16,7 @@ export default function ActionDrawer() {
 
     useEffect(() => {
         const interval = setInterval(() => {
+            console.log(locationSendDeadline)
             const timeLeft = locationSendDeadline - Date.now();
             setTimeLeftBeforePenalty(Math.floor(timeLeft / 1000 / 60));
         }, 1000);

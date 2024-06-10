@@ -2,7 +2,7 @@ import { secureAdminBroadcast } from "./admin_socket.js";
 import { penaltyController } from "./index.js";
 import { isInCircle } from "./map_utils.js";
 import { playersBroadcast, sendUpdatedTeamInformations } from "./team_socket.js";
-import { resetZone } from "./zone_manager.js";
+import { ZoneManager } from "./zone_manager.js";
 
 export const GameState = {
     SETUP: "setup",
@@ -12,9 +12,10 @@ export const GameState = {
 }
 
 export default class Game {
-    constructor() {
+    constructor(onUpdateZone, onUpdateNewZone) {
         this.teams = [];
         this.state = GameState.SETUP;
+        this.zone = new ZoneManager(onUpdateZone, onUpdateNewZone)
         this.settings = {
             loserEndGameMessage: "",
             winnerEndGameMessage: "",
@@ -35,9 +36,19 @@ export default class Game {
         //The game has started
         if (newState == GameState.PLAYING) {
             penaltyController.start();
+            if (!this.zone.ready()) {
+                return false;
+            }
             this.initLastSentLocations();
+            this.zone.reset()
+            //If the zone cannot be setup, reset everything
+            if (!this.zone.start()) {
+                this.setState(GameState.SETUP);
+                return;
+            }
         }
         if (newState != GameState.PLAYING) {
+            this.zone.reset();
             penaltyController.stop();
         }
         //Game reset
@@ -224,8 +235,23 @@ export default class Game {
         this.updateTeamChasing();
     }
 
+    /**
+     * Change the settings of the Zone manager
+     * The game should not be in PLAYING or FINISHED state
+     * @param {Object} newSettings The object containing the settings to be changed
+     * @returns false if failed
+     */
+    setZoneSettings(newSettings) {
+        //cannot change zones while playing
+        if (this.state == GameState.PLAYING || this.state == GameState.FINISHED) {
+            return false;
+        }
+        return this.zone.udpateSettings(newSettings)
+    }
+
     finishGame() {
         this.setState(GameState.FINISHED);
+        this.zone.reset();
         playersBroadcast("game_state", this.state);
     }
 }

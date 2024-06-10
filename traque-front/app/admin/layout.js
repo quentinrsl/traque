@@ -11,7 +11,6 @@ export default function AdminLayout({ children}) {
                         <ul className='flex' >
                             <Link href="/admin"><li className="p-5 bg-gray-800 hover:bg-gray-600 transition-all cursor-pointer h-full">Admin</li></Link>
                             <Link href="/admin/teams"><li className="p-5 bg-gray-800 hover:bg-gray-600 transition-all cursor-pointer h-full">Teams</li></Link>
-                            <Link href="/admin/map"><li className="p-5 bg-gray-800 hover:bg-gray-600 transition-all cursor-pointer h-full">Map</li></Link>
                         </ul> 
                     </div>
                     <div className="h-full overflow-y-scroll">

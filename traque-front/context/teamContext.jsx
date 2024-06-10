@@ -13,6 +13,7 @@ function TeamProvider({children}) {
     const [gameState, setGameState] = useState(GameState.SETUP);
     const [gameSettings, setGameSettings] = useState(null);
     const [zone, setZone] = useState(null);
+    const [zoneExtremities, setZoneExtremities] = useState(null);
     const measuredLocation = useLocation(5000);
     const {teamSocket} = useSocket();
     const {loggedIn} = useTeamConnexion();
@@ -26,6 +27,7 @@ function TeamProvider({children}) {
     
     useSocketListener(teamSocket, "game_state", setGameState);
     useSocketListener(teamSocket, "zone", setZone);
+    useSocketListener(teamSocket, "new_zone", setZoneExtremities);
     useSocketListener(teamSocket, "game_settings", setGameSettings);
 
 
@@ -38,7 +40,7 @@ function TeamProvider({children}) {
         }
     }, [loggedIn, measuredLocation]);
     
-    const value = useMemo(() => ({teamInfos, gameState, zone, gameSettings}), [gameSettings, teamInfos, gameState, zone]);
+    const value = useMemo(() => ({teamInfos, gameState, zone, zoneExtremities, gameSettings}), [gameSettings, teamInfos, gameState, zone, zoneExtremities]);
     return (
         <teamContext.Provider value={value}>
             {children}
