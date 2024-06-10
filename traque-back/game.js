@@ -156,6 +156,9 @@ export default class Game {
         if (team == undefined) {
             return false;
         }
+        if(location == null) {
+            return false;
+        }
         team.currentLocation = location;
         //Update the team ready status if they are in their starting area
         if (this.state == GameState.PLACEMENT && team.startingArea && team.startingArea && location) {
@@ -179,6 +182,10 @@ export default class Game {
         if (team == undefined) {
             return false;
         }
+        if(team.currentLocation == null) {
+            return false;
+        }
+
         team.locationSendDeadline = Number(new Date()) + penaltyController.settings.allowedTimeBetweenPositionUpdate * 60 * 1000;
         team.lastSentLocation = team.currentLocation;
         if (this.getTeam(team.chasing) != null) {
