@@ -1,5 +1,5 @@
 # ARCHIVED
-DEVELOPMENT PROJECT HAS BEEN MIGRATED TO https://git.rezel.net/LudoTech/traque
+DEVELOPMENT OF THIS PROJECT HAS BEEN MIGRATED TO https://git.rezel.net/LudoTech/traque
 # Instructions
 ## Setup development environment
 ### Front end configuration
